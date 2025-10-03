@@ -1,4 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using System;
@@ -9,29 +11,29 @@ namespace EnemyMods.Projectiles.Needles
     {
         public override void SetDefaults()
         {
-            projectile.width = 4;
-            projectile.height = 4;
-            projectile.timeLeft = 600;
-            projectile.thrown = true;
-            projectile.aiStyle = 0;
-            projectile.extraUpdates = 1;
-            projectile.friendly = true;
+            Projectile.width = 4;
+            Projectile.height = 4;
+            Projectile.timeLeft = 600;
+            Projectile.DamageType = DamageClass.Throwing;
+            Projectile.aiStyle = 0;
+            Projectile.extraUpdates = 1;
+            Projectile.friendly = true;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Iron Needle");
+            // DisplayName.SetDefault("Iron Needle");
         }
         public override void AI()
         {
-            projectile.rotation = (float)System.Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + 1.57f;
+            Projectile.rotation = (float)System.Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, 7, 0, 0, 100, default(Color), 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 7, 0, 0, 100, default(Color), 0.6f);
             }
-            Main.PlaySound(0, (int)projectile.position.X, (int)projectile.position.Y);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
         }
     }
 }

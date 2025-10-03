@@ -1,4 +1,5 @@
-﻿using Terraria.ID;
+﻿using Terraria.DataStructures;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
@@ -10,33 +11,33 @@ namespace EnemyMods.Items.Tier3
         public override void SetDefaults()
         {
 
-            item.damage = 22;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 22;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 10;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 30000;
-            item.rare = 4;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
-            item.shoot = ProjectileID.TinyEater;
-            item.shootSpeed = 6f;
+            Item.useTime = 10;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 30000;
+            Item.rare = 4;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
+            Item.shoot = ProjectileID.TinyEater;
+            Item.shootSpeed = 6f;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Deep Scourge Ring");
-      Tooltip.SetDefault("Summon a vast swarm of corrupt creatures. Two charges.");
+      // DisplayName.SetDefault("Deep Scourge Ring");
+      // Tooltip.SetDefault("Summon a vast swarm of corrupt creatures. Two charges.");
     }
 
         public override bool CanUseItem(Player player)
         {
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (play.charges[5] <= 0)
             {
                 return false;
@@ -51,22 +52,21 @@ namespace EnemyMods.Items.Tier3
                 return true;
             }
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             for (int i = 0; i < (Main.rand.Next(2, 4)); i++)
             {
-                int p = Projectile.NewProjectile(position.X, position.Y, speedX + Main.rand.Next(-30, 30) / 15f, speedY + Main.rand.Next(-30, 30) / 15f, 307, damage, knockBack, item.owner);
+                int p = Projectile.NewProjectile(position.X, position.Y, speedX + Main.rand.Next(-30, 30) / 15f, speedY + Main.rand.Next(-30, 30) / 15f, 307, damage, knockBack, Item.playerIndexTheItemIsReservedFor);
             }
-            int q = Projectile.NewProjectile(position.X, position.Y, speedX + Main.rand.Next(-30, 30) / 15f, speedY + Main.rand.Next(-30, 30) / 15f, 306, (int)(damage * 1.3), knockBack, item.owner);
+            int q = Projectile.NewProjectile(position.X, position.Y, speedX + Main.rand.Next(-30, 30) / 15f, speedY + Main.rand.Next(-30, 30) / 15f, 306, (int)(damage * 1.3), knockBack, Item.playerIndexTheItemIsReservedFor);
             return false;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ScourgeRing"), 1);
-            recipe.AddIngredient(mod.ItemType("SapphireTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ScourgeRing").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("SapphireTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

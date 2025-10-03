@@ -9,17 +9,17 @@ namespace EnemyMods.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.width = 1;
-            projectile.height = 1;
-            projectile.timeLeft = 720;
-            projectile.penetrate = 100;
-            projectile.hostile = false;
-            projectile.magic = true;
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.timeLeft = 720;
+            Projectile.penetrate = 100;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Magic;
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("ShadowflamePortal");
+            // DisplayName.SetDefault("ShadowflamePortal");
         }
         public override bool? CanHitNPC(NPC target)
         {
@@ -28,18 +28,18 @@ namespace EnemyMods.Projectiles
 
         public override void AI()
         {
-            projectile.ai[0] += 1f;
+            Projectile.ai[0] += 1f;
             //projectile.ai[1] += 1f;
-            if (projectile.ai[0] >= 6f)
+            if (Projectile.ai[0] >= 6f)
             {
                 for(int i = 0; i < 8; i++)
                 {
-                    int d = Dust.NewDust(projectile.position, projectile.width, projectile.height, 21, (projectile.velocity.X + Main.rand.Next(-2, 3)) * .05f, (projectile.velocity.Y + Main.rand.Next(-2, 3)) * .05f, 100, default(Color), 1.5f);
+                    int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 21, (Projectile.velocity.X + Main.rand.Next(-2, 3)) * .05f, (Projectile.velocity.Y + Main.rand.Next(-2, 3)) * .05f, 100, default(Color), 1.5f);
                 }
-                projectile.ai[0] = -54;
-                NPC npc = getClosestNPC(projectile);
-                float distance = (float)Math.Sqrt((npc.Center.X - projectile.Center.X) * (npc.Center.X - projectile.Center.X) + (npc.Center.Y - projectile.Center.Y) * (npc.Center.Y - projectile.Center.Y));
-                if(distance < 330) { int p = Projectile.NewProjectile(projectile.position.X, projectile.position.Y, -(projectile.position.X - npc.position.X) / distance * 10, -(projectile.position.Y - npc.position.Y) / distance * 10, 496, projectile.damage, projectile.knockBack, projectile.owner, 0f, 0f); }
+                Projectile.ai[0] = -54;
+                NPC npc = getClosestNPC(Projectile);
+                float distance = (float)Math.Sqrt((npc.Center.X - Projectile.Center.X) * (npc.Center.X - Projectile.Center.X) + (npc.Center.Y - Projectile.Center.Y) * (npc.Center.Y - Projectile.Center.Y));
+                if(distance < 330) { int p = Projectile.NewProjectile(Projectile.position.X, Projectile.position.Y, -(Projectile.position.X - npc.position.X) / distance * 10, -(Projectile.position.Y - npc.position.Y) / distance * 10, 496, Projectile.damage, Projectile.knockBack, Projectile.owner, 0f, 0f); }
             }
             /* Shadowbeam pentagram
             if(projectile.ai[1] == 6)

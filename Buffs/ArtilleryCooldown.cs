@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs
 {
     public class ArtilleryCooldown : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Artillery Cooldown");
+            // DisplayName.SetDefault("Artillery Cooldown");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
         }

@@ -9,14 +9,14 @@ namespace EnemyMods.Buffs
     {
         public override void Update(NPC npc, ref int buffIndex)
         {
-            npc.lifeRegen -= 10 + ((npc.FindBuffIndex(mod.BuffType("Bloodied"))>=0) ? 6 : 0);
+            npc.lifeRegen -= 10 + ((npc.FindBuffIndex(Mod.Find<ModBuff>("Bloodied").Type)>=0) ? 6 : 0);
             //todo visual effects
             if (npc.buffTime[buffIndex] % 15 == 0)
             {
                 ArrayList npcs = getNPCsInRange(npc, 200);
                 foreach (NPC n in npcs)
                 {
-                    n.AddBuff(mod.BuffType("Hemoplague"), npc.buffTime[buffIndex]);
+                    n.AddBuff(Mod.Find<ModBuff>("Hemoplague").Type, npc.buffTime[buffIndex]);
                 }
             }
             if(npc.buffTime[buffIndex] == 1)

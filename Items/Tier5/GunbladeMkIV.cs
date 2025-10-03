@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -12,48 +14,48 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.damage = 85;
-            item.melee = true;
-            item.width = 50;
-            item.height = 50;
+            Item.damage = 85;
+            Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+            Item.width = 50;
+            Item.height = 50;
 
-            item.useTime = 25;
-            item.useAnimation = 25;
-            item.useStyle = 1;
-            item.knockBack = 4;
-            item.value = 80000;
-            item.rare = 8;
-            item.UseSound = SoundID.Item1;
-            item.autoReuse = true;
-            item.useAmmo = AmmoID.Bullet;
-            item.scale = 1.2f;
-            item.shoot = 10;
-            item.shootSpeed = 10f;
-            Item.staff[item.type] = true;
+            Item.useTime = 25;
+            Item.useAnimation = 25;
+            Item.useStyle = 1;
+            Item.knockBack = 4;
+            Item.value = 80000;
+            Item.rare = 8;
+            Item.UseSound = SoundID.Item1;
+            Item.autoReuse = true;
+            Item.useAmmo = AmmoID.Bullet;
+            Item.scale = 1.2f;
+            Item.shoot = 10;
+            Item.shootSpeed = 10f;
+            Item.staff[Item.type] = true;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Gunblade MkIV");
-      Tooltip.SetDefault("Right-click to shoot.");
+      // DisplayName.SetDefault("Gunblade MkIV");
+      // Tooltip.SetDefault("Right-click to shoot.");
     }
 
         public override bool AltFunctionUse(Player player)
         {
             return true;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                damage += -8 + shotBonus * item.damage / 4;
-                player.AddBuff(mod.BuffType("GunbladeDefense"), shotBonus * 40);
+                damage += -8 + shotBonus * Item.damage / 4;
+                player.AddBuff(Mod.Find<ModBuff>("GunbladeDefense").Type, shotBonus * 40);
                 shotBonus = 0;
                 return true;
             }
             return false;
         }
-        public override bool ConsumeAmmo(Player player)
+        public override bool CanConsumeAmmo(Item ammo, Player player)
         {
             if (player.altFunctionUse == 2)
             {
@@ -61,7 +63,7 @@ namespace EnemyMods.Items.Tier5
             }
             return false;
         }
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.altFunctionUse == 2)
             {
@@ -75,36 +77,36 @@ namespace EnemyMods.Items.Tier5
         }
         public override bool CanUseItem(Player player)
         {
-            if (item.useAmmo == 0)
+            if (Item.useAmmo == 0)
             {
-                item.useAmmo = AmmoID.Bullet;
-                item.shoot = 10;
+                Item.useAmmo = AmmoID.Bullet;
+                Item.shoot = 10;
             }
-            if (!player.HasAmmo(item, true))
+            if (!player.HasAmmo(Item, true))
             {
-                item.useAmmo = 0;
-                item.shoot = 0;
+                Item.useAmmo = 0;
+                Item.shoot = 0;
             }
-            if (player.altFunctionUse == 2 && item.useAmmo == AmmoID.Bullet)
+            if (player.altFunctionUse == 2 && Item.useAmmo == AmmoID.Bullet)
             {
-                item.useStyle = 5;
-                item.UseSound = SoundID.Item11;
+                Item.useStyle = 5;
+                Item.UseSound = SoundID.Item11;
                 //add defense buff based on shotBonus consumed
-                item.melee = false;
-                item.ranged = true;
-                item.noMelee = true;
+                Item.melee = false/* tModPorter Suggestion: Remove. See Item.DamageType */;
+                Item.DamageType = DamageClass.Ranged;
+                Item.noMelee = true;
             }
             else
             {
-                item.useStyle = 1;
-                item.UseSound = SoundID.Item1;
-                item.ranged = false;
-                item.melee = true;
-                item.noMelee = false;
+                Item.useStyle = 1;
+                Item.UseSound = SoundID.Item1;
+                Item.ranged = false/* tModPorter Suggestion: Remove. See Item.DamageType */;
+                Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+                Item.noMelee = false;
             }
             return true;
         }
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             shotBonus++;
             if (crit)
@@ -114,16 +116,15 @@ namespace EnemyMods.Items.Tier5
             if (shotBonus > 20)
             {
                 shotBonus = 20;
-                Main.PlaySound(12, player.position);
+                SoundEngine.PlaySound(SoundID.MenuTick, player.position);
             }
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("GunbladeMkIII"), 1);
-            recipe.AddIngredient(mod.ItemType("RubyTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("GunbladeMkIII").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("RubyTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

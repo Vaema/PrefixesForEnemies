@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
 
@@ -10,34 +11,34 @@ namespace EnemyMods.Items.Tier3
         public override void SetDefaults()
         {
 
-            item.damage = 20;
-            item.melee = true;
-            item.width = 40;
-            item.height = 40;
+            Item.damage = 20;
+            Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+            Item.width = 40;
+            Item.height = 40;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;//check
-            item.knockBack = 3;
-            item.value = 30000;
-            item.rare = 4;
-            item.UseSound = SoundID.Item1;
-            item.autoReuse = false;
-            item.shoot = 10;//spear proj
-            item.shootSpeed = 10f;//modify
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;//check
+            Item.knockBack = 3;
+            Item.value = 30000;
+            Item.rare = 4;
+            Item.UseSound = SoundID.Item1;
+            Item.autoReuse = false;
+            Item.shoot = 10;//spear proj
+            Item.shootSpeed = 10f;//modify
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Dragoon Lance");
-      Tooltip.SetDefault("Right-click to enable Jump.");
+      // DisplayName.SetDefault("Dragoon Lance");
+      // Tooltip.SetDefault("Right-click to enable Jump.");
     }
 
         public override bool AltFunctionUse(Player player)
         {
             return true;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
@@ -45,16 +46,16 @@ namespace EnemyMods.Items.Tier3
             }
             return true;
         }
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             if (player.altFunctionUse == 2)
             {
-                player.AddBuff(mod.BuffType("Jump"), 600);
+                player.AddBuff(Mod.Find<ModBuff>("Jump").Type, 600);
             }
-            else if(player.FindBuffIndex(mod.BuffType("Jump")) != -1)
+            else if(player.FindBuffIndex(Mod.Find<ModBuff>("Jump").Type) != -1)
             {
                 //initiate dive attack
-                item.shoot = 1;//change to downward falling lance
+                Item.shoot = 1;//change to downward falling lance
                 player.jump = 0;//can't jump to stop
                 player.wingTime = 0;//can't use wings to stop
                 player.velocity.X = 0;
@@ -64,9 +65,9 @@ namespace EnemyMods.Items.Tier3
         }
         public override void GetWeaponDamage(Player player, ref int damage)
         {
-            if (player.FindBuffIndex(mod.BuffType("Jump")) != -1)
+            if (player.FindBuffIndex(Mod.Find<ModBuff>("Jump").Type) != -1)
             {
-                damage += (int)(player.velocity.Y * item.damage/4);
+                damage += (int)(player.velocity.Y * Item.damage/4);
             }
         }
         /*public override void AddRecipes()

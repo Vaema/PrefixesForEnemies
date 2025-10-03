@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs
 {
     public class GunbladeDefense : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gunblade Defense Bonus");
+            // DisplayName.SetDefault("Gunblade Defense Bonus");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)

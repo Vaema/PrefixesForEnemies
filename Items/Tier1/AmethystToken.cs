@@ -9,64 +9,63 @@ namespace EnemyMods.Items.Tier1
         public override void SetDefaults()
         {
 
-            item.width = 20;
-            item.height = 20;
+            Item.width = 20;
+            Item.height = 20;
 
-            item.value = 10000;
-            item.rare = 2;
-            item.maxStack = 99;
-            item.consumable = true;
-            item.UseSound = SoundID.Item4;
-            item.useStyle = 3;
-            item.useAnimation = 30;
-            item.useTime = 30;
+            Item.value = 10000;
+            Item.rare = 2;
+            Item.maxStack = 99;
+            Item.consumable = true;
+            Item.UseSound = SoundID.Item4;
+            Item.useStyle = 3;
+            Item.useAnimation = 30;
+            Item.useTime = 30;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Amethyst Token");
-      Tooltip.SetDefault("What will you get?");
+      // DisplayName.SetDefault("Amethyst Token");
+      // Tooltip.SetDefault("What will you get?");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             //tier 1 loot
             int x = Main.rand.Next(0, 7);
             switch (x)
             {
                 case 0:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("AmethystTicket"), Main.rand.Next(1,3));
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("AmethystTicket").Type, Main.rand.Next(1,3));
                     goto default;
                 case 1:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("ManaBattery"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("ManaBattery").Type, 1, false, -1);
                     goto default;
                 case 2:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("ScourgeRing"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("ScourgeRing").Type, 1, false, -1);
                     goto default;
                 case 3:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("IceShardRing"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("IceShardRing").Type, 1, false, -1);
                     goto default;
                 case 4:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("SimpleRapier"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("SimpleRapier").Type, 1, false, -1);
                     goto default;
                 case 5:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("FencerFoil"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("FencerFoil").Type, 1, false, -1);
                     goto default;
                 case 6:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("WoodGreatbow"), 1, false, -1);
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("WoodGreatbow").Type, 1, false, -1);
                     goto default;
                 default:
-                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, mod.ItemType("AmethystTicket"), Main.rand.Next(1, 3));
+                    Item.NewItem((int)player.position.X, (int)player.position.Y, player.width, player.height, Mod.Find<ModItem>("AmethystTicket").Type, Main.rand.Next(1, 3));
                     break;
             }
             return true;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("TopazToken"), 1);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("TopazToken").Type, 1);
+            recipe.Register();
         }
     }
 }

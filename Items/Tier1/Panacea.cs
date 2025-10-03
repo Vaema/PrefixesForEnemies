@@ -11,26 +11,26 @@ namespace EnemyMods.Items.Tier1
         {
 
 
-            item.maxStack = 30;
-            item.value = 1000;
-            item.rare = 2;
-            item.useAnimation = 17;
-            item.useTime = 17;
-            item.useStyle = 2;
-            item.consumable = true;
-            item.useTurn = true;
-            item.width = 14;
-            item.height = 24;
-            item.UseSound = SoundID.Item3;
+            Item.maxStack = 30;
+            Item.value = 1000;
+            Item.rare = 2;
+            Item.useAnimation = 17;
+            Item.useTime = 17;
+            Item.useStyle = 2;
+            Item.consumable = true;
+            Item.useTurn = true;
+            Item.width = 14;
+            Item.height = 24;
+            Item.UseSound = SoundID.Item3;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Panacea");
-      Tooltip.SetDefault("Cures most all debuffs");
+      // DisplayName.SetDefault("Panacea");
+      // Tooltip.SetDefault("Cures most all debuffs");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             for (int i = 0; i < player.buffType.Length; i++)
             {

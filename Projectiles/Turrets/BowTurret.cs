@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,8 +12,8 @@ namespace EnemyMods.Projectiles.Turrets
         public override void SetDefaults()
         {
             base.SetDefaults();
-            projectile.width = 16;
-            projectile.height = 32;
+            Projectile.width = 16;
+            Projectile.height = 32;
 
             target = null;
             range = 1000;
@@ -30,10 +31,10 @@ namespace EnemyMods.Projectiles.Turrets
             }
 
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if(Main.netMode != 1)
-            Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, mod.ItemType("BowTurret"), 1, false, 0, false, false);
+            Item.NewItem((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, Mod.Find<ModItem>("BowTurret").Type, 1, false, 0, false, false);
         }
         protected override void shoot(Vector2 toTarget)
         {
@@ -43,7 +44,7 @@ namespace EnemyMods.Projectiles.Turrets
             {
                 return;
             }
-            Main.PlaySound(2, projectile.position, 5);
+            SoundEngine.PlaySound(SoundID.Item5, Projectile.position);
             float distance = toTarget.Length();
             distance = (distance / 5f) * distance;
             float rot = toTarget.ToRotation();
@@ -69,7 +70,7 @@ namespace EnemyMods.Projectiles.Turrets
             }
             toTarget.Normalize();
             toTarget *= shootSpeed;
-            int p = Projectile.NewProjectile(projectile.position.X, projectile.position.Y, toTarget.X, toTarget.Y, type, damage, projectile.knockBack, projectile.owner);
+            int p = Projectile.NewProjectile(Projectile.position.X, Projectile.position.Y, toTarget.X, toTarget.Y, type, damage, Projectile.knockBack, Projectile.owner);
             if (Main.projectile[p].Name.Contains("Greatarrow"))
             {
                 Main.projectile[p].velocity /= 2;
@@ -85,15 +86,15 @@ namespace EnemyMods.Projectiles.Turrets
 
         protected override void update()
         {
-            Player player = Main.player[projectile.owner];
-            MPlayer mplayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            Player player = Main.player[Projectile.owner];
+            MPlayer mplayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (player.dead)
             {
                 mplayer.bowTurret = false;
             }
             if (!mplayer.bowTurret)
             {
-                projectile.timeLeft = 1;
+                Projectile.timeLeft = 1;
             }
         }
     }

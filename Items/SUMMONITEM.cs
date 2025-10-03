@@ -10,30 +10,30 @@ namespace EnemyMods.Items//be sure to change this to your modname
         {
             //placeholder stats, adjust as needed
 
-            item.damage = 100;
-            item.summon = true;
-            item.mana = 10;
-            item.width = 26;
-            item.height = 28;
+            Item.damage = 100;
+            Item.DamageType = DamageClass.Summon;
+            Item.mana = 10;
+            Item.width = 26;
+            Item.height = 28;
 
-            item.useTime = 36;
-            item.useAnimation = 36;
-            item.useStyle = 1;
-            item.noMelee = true;
-            item.knockBack = 3;
-            item.value = Item.buyPrice(0, 30, 0, 0);
-            item.rare = 9;
-            item.UseSound = SoundID.Item44;
-            item.shoot = mod.ProjectileType("UnboundSoul");
-            item.shootSpeed = 10f;
-            item.buffType = mod.BuffType("UnboundSoul");
-            item.buffTime = 3600;
+            Item.useTime = 36;
+            Item.useAnimation = 36;
+            Item.useStyle = 1;
+            Item.noMelee = true;
+            Item.knockBack = 3;
+            Item.value = Item.buyPrice(0, 30, 0, 0);
+            Item.rare = 9;
+            Item.UseSound = SoundID.Item44;
+            Item.shoot = Mod.Find<ModProjectile>("UnboundSoul").Type;
+            Item.shootSpeed = 10f;
+            Item.buffType = Mod.Find<ModBuff>("UnboundSoul").Type;
+            Item.buffTime = 3600;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Summon Item");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Summon Item");
+      // Tooltip.SetDefault("");
     }
 
     }

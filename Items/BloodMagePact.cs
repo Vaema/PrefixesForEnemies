@@ -9,28 +9,28 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.accessory = true;
-            item.width = 10;
-            item.height = 10;
-            item.rare = 2;
+            Item.accessory = true;
+            Item.width = 10;
+            Item.height = 10;
+            Item.rare = 2;
 
-            item.value = 5000;
+            Item.value = 5000;
         }
 
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood Mage's Pact");
-      Tooltip.SetDefault("Provides a blood well.");
+      // DisplayName.SetDefault("Blood Mage's Pact");
+      // Tooltip.SetDefault("Provides a blood well.");
     }
 
         public override void UpdateEquip(Player player)
         {
-            if(player.FindBuffIndex(mod.BuffType("BloodWell")) == -1)
+            if(player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type) == -1)
             {
                 //int p = Projectile.NewProjectile(player.position.X, player.position.Y, 0, 0, mod.ProjectileType("BloodWell"), 0, 0, player.whoAmI);
                 Main.projectile[999] = new Projectile();
-                Main.projectile[999].SetDefaults(mod.ProjectileType("BloodWell"));
+                Main.projectile[999].SetDefaults(Mod.Find<ModProjectile>("BloodWell").Type);
                 Projectile proj = Main.projectile[999];
                 proj.owner = player.whoAmI;
                 proj.damage = 0;
@@ -43,7 +43,7 @@ namespace EnemyMods.Items
                 proj.wet = false;
 
             }
-            player.AddBuff(mod.BuffType("BloodWell"), 2);
+            player.AddBuff(Mod.Find<ModBuff>("BloodWell").Type, 2);
         }/*
         public override void AddRecipes()
         {

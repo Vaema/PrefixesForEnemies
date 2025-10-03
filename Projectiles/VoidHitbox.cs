@@ -9,24 +9,24 @@ namespace EnemyMods.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.width = 8;
-            projectile.height = 8;
-            projectile.timeLeft = 120;
-            projectile.penetrate = -1;
-            projectile.hostile = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
+            Projectile.width = 8;
+            Projectile.height = 8;
+            Projectile.timeLeft = 120;
+            Projectile.penetrate = -1;
+            Projectile.hostile = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Void Tendril");
+            // DisplayName.SetDefault("Void Tendril");
         }
 
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            MPlayer pinf = ((MPlayer)target.GetModPlayer(mod, "MPlayer"));
+            MPlayer pinf = ((MPlayer)target.GetModPlayer(Mod, "MPlayer"));
             pinf.voidBurn = Math.Max((int)(damage / 25f + target.statLifeMax2 / 200f + 1), pinf.voidBurn);
-            target.AddBuff(mod.BuffType("VoidBurn"), 480 + 100 * damage);
+            target.AddBuff(Mod.Find<ModBuff>("VoidBurn").Type, 480 + 100 * damage);
         }
     }
 }

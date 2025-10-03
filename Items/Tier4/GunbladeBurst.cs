@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using EnemyMods.NPCs;
@@ -15,42 +17,42 @@ namespace EnemyMods.Items.Tier4
         public override void SetDefaults()
         {
 
-            item.damage = 58;
-            item.melee = true;
-            item.width = 48;
-            item.height = 58;
+            Item.damage = 58;
+            Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+            Item.width = 48;
+            Item.height = 58;
 
-            item.useTime = 24;
-            item.useAnimation = 24;
-            item.useStyle = 1;
-            item.knockBack = 4;
-            item.value = 50000;
-            item.rare = 6;
-            item.UseSound = SoundID.Item1;
-            item.autoReuse = true;
-            item.useAmmo = AmmoID.Bullet;
-            item.shoot = 10;
-            item.scale = 1.2f;
-            item.shootSpeed = 10f;
-            Item.staff[item.type] = true;
+            Item.useTime = 24;
+            Item.useAnimation = 24;
+            Item.useStyle = 1;
+            Item.knockBack = 4;
+            Item.value = 50000;
+            Item.rare = 6;
+            Item.UseSound = SoundID.Item1;
+            Item.autoReuse = true;
+            Item.useAmmo = AmmoID.Bullet;
+            Item.shoot = 10;
+            Item.scale = 1.2f;
+            Item.shootSpeed = 10f;
+            Item.staff[Item.type] = true;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Gunblade: Burst");
-      Tooltip.SetDefault("Right-click to shoot.");
+      // DisplayName.SetDefault("Gunblade: Burst");
+      // Tooltip.SetDefault("Right-click to shoot.");
     }
 
         public override bool AltFunctionUse(Player player)
         {
              return true;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                Main.PlaySound(2, player.position, 11);
-                damage += -20 + shotBonus * item.damage / 8;
+                SoundEngine.PlaySound(SoundID.Item11, player.position);
+                damage += -20 + shotBonus * Item.damage / 8;
                 shots++;
                 if(DoT<15)
                     DoT++;
@@ -63,7 +65,7 @@ namespace EnemyMods.Items.Tier4
             }
             return false;
         }
-        public override bool ConsumeAmmo(Player player)
+        public override bool CanConsumeAmmo(Item ammo, Player player)
         {
             if (player.altFunctionUse == 2 && shots == 0)
             {
@@ -73,40 +75,40 @@ namespace EnemyMods.Items.Tier4
         }
         public override bool CanUseItem(Player player)
         {
-            if (item.useAmmo == 0)
+            if (Item.useAmmo == 0)
             {
-                item.useAmmo = AmmoID.Bullet;
-                item.shoot = 10;
+                Item.useAmmo = AmmoID.Bullet;
+                Item.shoot = 10;
             }
-            if (!player.HasAmmo(item, true))
+            if (!player.HasAmmo(Item, true))
             {
-                item.useAmmo = 0;
-                item.shoot = 0;
+                Item.useAmmo = 0;
+                Item.shoot = 0;
             }
-            if (player.altFunctionUse == 2 && item.useAmmo == AmmoID.Bullet)
+            if (player.altFunctionUse == 2 && Item.useAmmo == AmmoID.Bullet)
             {
-                item.melee = false;
-                item.ranged = true;
-                item.useTime = 8;
-                item.reuseDelay = 30;
-                item.useStyle = 5;
-                item.UseSound = SoundID.Item11;
-                item.noMelee = true;
+                Item.melee = false/* tModPorter Suggestion: Remove. See Item.DamageType */;
+                Item.DamageType = DamageClass.Ranged;
+                Item.useTime = 8;
+                Item.reuseDelay = 30;
+                Item.useStyle = 5;
+                Item.UseSound = SoundID.Item11;
+                Item.noMelee = true;
             }
             else
             {
-                item.useTime = 24;
-                item.useStyle = 1;
-                item.UseSound = SoundID.Item1;
-                item.ranged = false;
-                item.melee = true;
-                item.noMelee = false;
+                Item.useTime = 24;
+                Item.useStyle = 1;
+                Item.UseSound = SoundID.Item1;
+                Item.ranged = false/* tModPorter Suggestion: Remove. See Item.DamageType */;
+                Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+                Item.noMelee = false;
             }
             return true;
         }
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
-            if (player.altFunctionUse == 2 || item.useStyle == 5)
+            if (player.altFunctionUse == 2 || Item.useStyle == 5)
             {
                 float backX = 12f;
                 float downY = 0f;
@@ -116,7 +118,7 @@ namespace EnemyMods.Items.Tier4
                 player.itemLocation.Y = player.itemLocation.Y - (backX * sinRot * player.direction) + (downY * cosRot * player.gravDir);
             }
         }
-        public override void OnHitNPC(Player player, NPC target, int damage, float knockBack, bool crit)
+        public override void OnHitNPC(Player player, NPC target, NPC.HitInfo hit, int damageDone)
         {
             shotBonus++;
             if (crit)
@@ -126,7 +128,7 @@ namespace EnemyMods.Items.Tier4
             if (shotBonus > 10)
             {
                 shotBonus = 10;
-                Main.PlaySound(12, player.position);
+                SoundEngine.PlaySound(SoundID.MenuTick, player.position);
             }
             if(DoT > 0)
             {
@@ -137,11 +139,10 @@ namespace EnemyMods.Items.Tier4
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("EmeraldTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("EmeraldTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

@@ -5,15 +5,15 @@ namespace EnemyMods.Buffs
 {
     public class Undying : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Undying");
-            Description.SetDefault("Defy the jaws of death...");
+            // DisplayName.SetDefault("Undying");
+            // Description.SetDefault("Defy the jaws of death...");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)
         {
-            MPlayer pinf = ((MPlayer)player.GetModPlayer(mod, "MPlayer"));
+            MPlayer pinf = ((MPlayer)player.GetModPlayer(Mod, "MPlayer"));
             pinf.undying = true;
         }
     }

@@ -11,20 +11,20 @@ namespace EnemyMods.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.aiStyle = -1;
-            projectile.width = 1;
-            projectile.height = 1;
-            projectile.penetrate = -1;
-            projectile.tileCollide = false;
-            projectile.timeLeft = 630;
-            projectile.alpha = 255;
+            Projectile.aiStyle = -1;
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.penetrate = -1;
+            Projectile.tileCollide = false;
+            Projectile.timeLeft = 630;
+            Projectile.alpha = 255;
         }
         public override void AI()
         {
             //ai 0 and 1 are stored velocity X and Y
-            if(projectile.timeLeft%60==0 && projectile.owner == Main.myPlayer)
+            if(Projectile.timeLeft%60==0 && Projectile.owner == Main.myPlayer)
             {
-                int p = Projectile.NewProjectile(projectile.position.X, projectile.position.Y, projectile.ai[0], projectile.ai[1], 640, projectile.damage, projectile.knockBack, projectile.owner);
+                int p = Projectile.NewProjectile(Projectile.position.X, Projectile.position.Y, Projectile.ai[0], Projectile.ai[1], 640, Projectile.damage, Projectile.knockBack, Projectile.owner);
             }
         }
     }

@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 using Terraria.ID;
 
 namespace EnemyMods.Items.Tier1
@@ -8,33 +9,32 @@ namespace EnemyMods.Items.Tier1
         public override void SetDefaults()
         {
 
-            item.damage = 4;
-            item.ranged = true;
-            item.width = 8;
-            item.height = 8;
-            item.maxStack = 999;
+            Item.damage = 4;
+            Item.DamageType = DamageClass.Ranged;
+            Item.width = 8;
+            Item.height = 8;
+            Item.maxStack = 999;
 
-            item.consumable = true;
-            item.knockBack = 2f;
-            item.value = 50;
-            item.rare = 2;
-            item.shoot = mod.ProjectileType("Splitter");
-            item.shootSpeed = 4;
-            item.ammo = AmmoID.Bullet;
+            Item.consumable = true;
+            Item.knockBack = 2f;
+            Item.value = 50;
+            Item.rare = 2;
+            Item.shoot = Mod.Find<ModProjectile>("Splitter").Type;
+            Item.shootSpeed = 4;
+            Item.ammo = AmmoID.Bullet;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Splitter Round");
-      Tooltip.SetDefault("Splits into 2 bullets");
+      // DisplayName.SetDefault("Splitter Round");
+      // Tooltip.SetDefault("Splits into 2 bullets");
     }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("AmethystTicket"));
-            recipe.SetResult(this, 200);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe(200);
+            recipe.AddIngredient(Mod.Find<ModItem>("AmethystTicket").Type);
+            recipe.Register();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.Audio;
+using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using System;
@@ -10,59 +11,59 @@ namespace EnemyMods.Projectiles.Bullets.Fragments
     {
         public override void SetDefaults()
         {
-            projectile.width = 20;
-            projectile.height = 22;
-            projectile.timeLeft = 600;
-            projectile.ranged = true;
-            projectile.aiStyle = 0;
-            projectile.extraUpdates = 1;
-            projectile.friendly = true;
-            projectile.scale = .6f;
+            Projectile.width = 20;
+            Projectile.height = 22;
+            Projectile.timeLeft = 600;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.aiStyle = 0;
+            Projectile.extraUpdates = 1;
+            Projectile.friendly = true;
+            Projectile.scale = .6f;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Vortex Fragment");
+            // DisplayName.SetDefault("Vortex Fragment");
         }
         public override void AI()
         {
-            Lighting.AddLight((int)(projectile.Center.X / 16f), (int)(projectile.Center.Y / 16f), .2f, 1f, .3f);
-            projectile.rotation = (float)System.Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + 1.57f;
-            if (projectile.timeLeft % 4 == 0)
+            Lighting.AddLight((int)(Projectile.Center.X / 16f), (int)(Projectile.Center.Y / 16f), .2f, 1f, .3f);
+            Projectile.rotation = (float)System.Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
+            if (Projectile.timeLeft % 4 == 0)
             {
-                int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, DustID.Vortex, 0, 0, 100, default(Color), 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, DustID.Vortex, 0, 0, 100, default(Color), 0.6f);
             }
-            if (projectile.alpha < 170)
+            if (Projectile.alpha < 170)
             {
                 for (int num136 = 0; num136 < 5; num136++)
                 {
-                    float x2 = projectile.Center.X - projectile.velocity.X / 10f * (float)num136*2;
-                    float y2 = projectile.Center.Y - projectile.velocity.Y / 10f * (float)num136*2;
+                    float x2 = Projectile.Center.X - Projectile.velocity.X / 10f * (float)num136*2;
+                    float y2 = Projectile.Center.Y - Projectile.velocity.Y / 10f * (float)num136*2;
                     int num137 = Dust.NewDust(new Vector2(x2, y2), 1, 1, 229, 0f, 0f, 0, default(Color), 1f);
-                    Main.dust[num137].alpha = projectile.alpha;
+                    Main.dust[num137].alpha = Projectile.alpha;
                     Main.dust[num137].position.X = x2;
                     Main.dust[num137].position.Y = y2;
                     Main.dust[num137].velocity *= 0f;
                     Main.dust[num137].noGravity = true;
                 }
             }
-            if (projectile.alpha > 0)
+            if (Projectile.alpha > 0)
             {
-                projectile.alpha -= 15;
+                Projectile.alpha -= 15;
             }
-            if (projectile.alpha < 0)
+            if (Projectile.alpha < 0)
             {
-                projectile.alpha = 0;
+                Projectile.alpha = 0;
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for(int i=0; i<5; i++)
             {
-                int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, 229, 0, 0, 100, default(Color), 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 229, 0, 0, 100, default(Color), 0.6f);
             }
-            Main.PlaySound(0, (int)projectile.position.X, (int)projectile.position.Y);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
         }
-        public override void ModifyHitNPC(NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPC(NPC target, ref NPC.HitModifiers modifiers)
         {
             if(!crit && Main.rand.Next(0, 3) == 0)
             {

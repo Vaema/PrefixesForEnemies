@@ -11,24 +11,24 @@ namespace EnemyMods.Items.Tier2
         public override void SetDefaults()
         {
 
-            item.width = 18;
-            item.height = 18;
-            item.value = 10000;
-            item.rare = 3;
-            item.defense = 5;
+            Item.width = 18;
+            Item.height = 18;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.defense = 5;
 
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Embellished Shoes");
-      Tooltip.SetDefault("+4% magic damage and crit");
+      // DisplayName.SetDefault("Embellished Shoes");
+      // Tooltip.SetDefault("+4% magic damage and crit");
     }
 
         public override void UpdateEquip(Player player)
         {
-            player.magicDamage += .04f;
-            player.magicCrit += 4;
+            player.GetDamage(DamageClass.Magic) += .04f;
+            player.GetCritChance(DamageClass.Magic) += 4;
         }
 
         /*

@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.DataStructures;
+using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
@@ -17,33 +18,33 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.damage = 50;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 50;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 80000;
-            item.rare = 8;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
-            item.shootSpeed = 5f;
-            item.shoot = mod.ProjectileType("Firecracker");
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 80000;
+            Item.rare = 8;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
+            Item.shootSpeed = 5f;
+            Item.shoot = Mod.Find<ModProjectile>("Firecracker").Type;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Firecracker Ring");
-      Tooltip.SetDefault("Shoots an unpredictable explosive blast. Two charges.");
+      // DisplayName.SetDefault("Firecracker Ring");
+      // Tooltip.SetDefault("Shoots an unpredictable explosive blast. Two charges.");
     }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int p = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, item.damage, item.knockBack, item.owner);
+            int p = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, Item.damage, Item.knockBack, Item.playerIndexTheItemIsReservedFor);
             Main.projectile[p].ai[1] = (float)Main.rand.Next(-20, 21) / 200;
             Main.projectile[p].ai[2] = (float)Main.rand.Next(-20, 21) / 200;
             charges--;
@@ -59,14 +60,14 @@ namespace EnemyMods.Items.Tier5
         }
         public override void UpdateInventory(Player player)
         {
-            if (((MPlayer)player.GetModPlayer(mod, "MPlayer")).chargeBangle)
+            if (((MPlayer)player.GetModPlayer(Mod, "MPlayer")).chargeBangle)
             {
                 maxCharges = 3;
             }
             if (charges < maxCharges)
             {
                 rechargeCount++;
-                if (((MPlayer)player.GetModPlayer(mod, "MPlayer")).embellishedRegen && Main.rand.Next(0, 2) == 0)
+                if (((MPlayer)player.GetModPlayer(Mod, "MPlayer")).embellishedRegen && Main.rand.Next(0, 2) == 0)
                 {
                     rechargeCount++;
                 }

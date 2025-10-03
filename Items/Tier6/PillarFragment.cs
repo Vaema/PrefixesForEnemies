@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 using Terraria.ID;
 
 namespace EnemyMods.Items.Tier6
@@ -8,33 +9,32 @@ namespace EnemyMods.Items.Tier6
         public override void SetDefaults()
         {
 
-                item.damage = 17;
-                item.ranged = true;
-                item.width = 8;
-                item.height = 8;
-                item.maxStack = 999;
+                Item.damage = 17;
+                Item.DamageType = DamageClass.Ranged;
+                Item.width = 8;
+                Item.height = 8;
+                Item.maxStack = 999;
 
-                item.consumable = true;
-                item.knockBack = 3f;
-                item.value = 200;
-                item.rare = 10;
-                item.shoot = mod.ProjectileType("PillarFragment");
-                item.shootSpeed = 4;
-                item.ammo = AmmoID.Bullet;
+                Item.consumable = true;
+                Item.knockBack = 3f;
+                Item.value = 200;
+                Item.rare = 10;
+                Item.shoot = Mod.Find<ModProjectile>("PillarFragment").Type;
+                Item.shootSpeed = 4;
+                Item.ammo = AmmoID.Bullet;
             }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Pillar Fragment Round");
-      Tooltip.SetDefault("Splits into 2-3 pillar fragments midair");
+      // DisplayName.SetDefault("Pillar Fragment Round");
+      // Tooltip.SetDefault("Splits into 2-3 pillar fragments midair");
     }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("AmberTicket"));
-            recipe.SetResult(this, 200);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe(200);
+            recipe.AddIngredient(Mod.Find<ModItem>("AmberTicket").Type);
+            recipe.Register();
         }
     }
 }

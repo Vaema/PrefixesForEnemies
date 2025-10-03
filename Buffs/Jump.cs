@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs
 {
     public class Jump : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Jump");
+            // DisplayName.SetDefault("Jump");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)

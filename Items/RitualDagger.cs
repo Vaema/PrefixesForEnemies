@@ -10,36 +10,36 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.damage = 11;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 11;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = 5;
-            item.noUseGraphic = true;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 10000;
-            item.rare = 3;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = 5;
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 10000;
+            Item.rare = 3;
             //item.UseSound = SoundID.Item43;
-            item.autoReuse = false;
+            Item.autoReuse = false;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood: Ritual Dagger");
-      Tooltip.SetDefault("Bleed yourself to fill your well");
+      // DisplayName.SetDefault("Blood: Ritual Dagger");
+      // Tooltip.SetDefault("Bleed yourself to fill your well");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             Projectile p = null;
-            int b = player.FindBuffIndex(mod.BuffType("BloodWell"));
+            int b = player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
             for (int i = 999; i >= 0; i--)
             {
-                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == mod.ProjectileType("BloodWell"))
+                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == Mod.Find<ModProjectile>("BloodWell").Type)
                 {
                     p = Main.projectile[i];
                     break;

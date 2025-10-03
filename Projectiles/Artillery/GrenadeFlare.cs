@@ -10,20 +10,20 @@ namespace EnemyMods.Projectiles.Artillery
     {
         public override void SetDefaults()
         {
-            projectile.CloneDefaults(163);
-            projectile.timeLeft = 1200;
+            Projectile.CloneDefaults(163);
+            Projectile.timeLeft = 1200;
         }
         public override void AI()
         {
-            if (projectile.velocity.Length() == 0 && Main.player[projectile.owner].FindBuffIndex(mod.BuffType("ArtilleryCooldown")) == -1 && projectile.position.Y < Main.worldSurface)
+            if (Projectile.velocity.Length() == 0 && Main.player[Projectile.owner].FindBuffIndex(Mod.Find<ModBuff>("ArtilleryCooldown").Type) == -1 && Projectile.position.Y < Main.worldSurface)
             {
                 for (int i = 0; i < 8; i++)
                 {
-                    float X = Main.rand.Next(-100, 101) + projectile.position.X;
-                    float Y = Main.rand.Next(-800, 301) + projectile.position.Y - 2000;
-                    int p = Projectile.NewProjectile(X, Y, -X / 200, 5 + Main.rand.Next(-100, 101) / 100, 30, (int)(20 * Main.player[projectile.owner].rangedDamage), 2, projectile.owner);
+                    float X = Main.rand.Next(-100, 101) + Projectile.position.X;
+                    float Y = Main.rand.Next(-800, 301) + Projectile.position.Y - 2000;
+                    int p = Projectile.NewProjectile(X, Y, -X / 200, 5 + Main.rand.Next(-100, 101) / 100, 30, (int)(20 * Main.player[Projectile.owner].GetDamage(DamageClass.Ranged)), 2, Projectile.owner);
                 }
-                Main.player[projectile.owner].AddBuff(mod.BuffType("ArtilleryCooldown"), 1200);
+                Main.player[Projectile.owner].AddBuff(Mod.Find<ModBuff>("ArtilleryCooldown").Type, 1200);
             }
         }
     }

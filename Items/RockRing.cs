@@ -16,28 +16,28 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.damage = 50;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 50;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 40;
-            item.useAnimation = 40;
-            item.useStyle = 1;
-            item.noMelee = true;
-            item.knockBack = 4;
-            item.value = 10000;
-            item.rare = 3;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
+            Item.useTime = 40;
+            Item.useAnimation = 40;
+            Item.useStyle = 1;
+            Item.noMelee = true;
+            Item.knockBack = 4;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
             //item.shoot = mod.ProjectileType("Rock");
-            item.shootSpeed = 8f;
+            Item.shootSpeed = 8f;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Rock Ring");
-      Tooltip.SetDefault("Shoots a big rock. Three charges.");
+      // DisplayName.SetDefault("Rock Ring");
+      // Tooltip.SetDefault("Shoots a big rock. Three charges.");
     }
 
         public override bool CanUseItem(Player player)
@@ -48,9 +48,9 @@ namespace EnemyMods.Items
             }
             else return true;
         }
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
-            int p = Projectile.NewProjectile(Main.MouseWorld.X, player.Center.Y - 600, 0, 0, mod.ProjectileType("Rock"), item.damage, item.knockBack, item.owner);
+            int p = Projectile.NewProjectile(Main.MouseWorld.X, player.Center.Y - 600, 0, 0, Mod.Find<ModProjectile>("Rock").Type, Item.damage, Item.knockBack, Item.playerIndexTheItemIsReservedFor);
             charges--;
             return false;
         }
@@ -59,7 +59,7 @@ namespace EnemyMods.Items
             if (charges < maxCharges)
             {
                 rechargeCount++;
-                if (((MPlayer)player.GetModPlayer(mod, "MPlayer")).embellishedRegen && Main.rand.Next(0, 2) == 0)
+                if (((MPlayer)player.GetModPlayer(Mod, "MPlayer")).embellishedRegen && Main.rand.Next(0, 2) == 0)
                 {
                     rechargeCount++;
                 }

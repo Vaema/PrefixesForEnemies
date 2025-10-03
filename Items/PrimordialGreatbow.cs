@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
 
@@ -11,38 +12,38 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.width = 12;
-            item.height = 42;
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.useStyle = 5;
-            item.useAnimation = 40;
-            item.useTime = 40;
-            item.damage = 38;
-            item.rare = 6;
-            item.value = 50000;
-            item.knockBack = 2;
-            item.shoot = 1;
-            item.useAmmo = AmmoID.Arrow;
-            item.noMelee = true;
-            item.shootSpeed = 6.8f;
-            item.ranged = true;
+            Item.width = 12;
+            Item.height = 42;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.useStyle = 5;
+            Item.useAnimation = 40;
+            Item.useTime = 40;
+            Item.damage = 38;
+            Item.rare = 6;
+            Item.value = 50000;
+            Item.knockBack = 2;
+            Item.shoot = 1;
+            Item.useAmmo = AmmoID.Arrow;
+            Item.noMelee = true;
+            Item.shootSpeed = 6.8f;
+            Item.DamageType = DamageClass.Ranged;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Primordial Greatbow");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Primordial Greatbow");
+      // Tooltip.SetDefault("");
     }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int projIndex = Projectile.NewProjectile(position.X - speedX, position.Y - speedY, speedX, speedY, type, -player.whoAmI - 256, knockBack, player.whoAmI);
 
             float arrowSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
             //damage is arrow index
             //knockback is arrow speed
-            Projectile.NewProjectile(position.X, position.Y, 0, 0, mod.ProjectileType("PrimordialGreatbow"), damage, arrowSpeed, player.whoAmI);
+            Projectile.NewProjectile(position.X, position.Y, 0, 0, Mod.Find<ModProjectile>("PrimordialGreatbow").Type, damage, arrowSpeed, player.whoAmI);
             return false;
         }
         /*

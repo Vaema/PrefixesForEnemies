@@ -8,11 +8,11 @@ namespace EnemyMods.Projectiles.Turrets
     {
         public override void SetDefaults()
         {
-            projectile.width = 24;
-            projectile.height = 24;
-            projectile.aiStyle = 1;
-            projectile.ranged = true;
-            projectile.timeLeft = 2400;
+            Projectile.width = 24;
+            Projectile.height = 24;
+            Projectile.aiStyle = 1;
+            Projectile.DamageType = DamageClass.Ranged;
+            Projectile.timeLeft = 2400;
         }
         public override void AI()
         {
@@ -21,37 +21,37 @@ namespace EnemyMods.Projectiles.Turrets
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             float aiOut = 1.57f * 3;
-            Vector2 tilePos = (projectile.Center) / 16;
+            Vector2 tilePos = (Projectile.Center) / 16;
             //determines which way the turret should face depending on how it collided
             //aiOut is the angle from turret to stand
-            if(Main.tile[(int)tilePos.X, (int)tilePos.Y + 1].active() && projectile.oldVelocity.Y > 0)
+            if(Main.tile[(int)tilePos.X, (int)tilePos.Y + 1].HasTile && Projectile.oldVelocity.Y > 0)
             {
                 aiOut = 1.57f * 3;
             }
-            if (Main.tile[(int)tilePos.X + 1, (int)tilePos.Y].active() && projectile.oldVelocity.X > 0)
+            if (Main.tile[(int)tilePos.X + 1, (int)tilePos.Y].HasTile && Projectile.oldVelocity.X > 0)
             {
                 aiOut = 3.14f;
             }
-            if (Main.tile[(int)tilePos.X -1, (int)tilePos.Y].active() && projectile.oldVelocity.X <= 0)
+            if (Main.tile[(int)tilePos.X -1, (int)tilePos.Y].HasTile && Projectile.oldVelocity.X <= 0)
             {
                 aiOut = 0f;
             }
-            if (Main.tile[(int)tilePos.X, (int)tilePos.Y - 1].active() && projectile.oldVelocity.Y <= 0)
+            if (Main.tile[(int)tilePos.X, (int)tilePos.Y - 1].HasTile && Projectile.oldVelocity.Y <= 0)
             {
                 aiOut = 1.57f;
             }
-            Player player = Main.player[projectile.owner];
-            player.AddBuff(mod.BuffType("GunTurret"), 18002);
-            MPlayer mplayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            Player player = Main.player[Projectile.owner];
+            player.AddBuff(Mod.Find<ModBuff>("GunTurret").Type, 18002);
+            MPlayer mplayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             mplayer.gunTurret = true;
-            int p = Projectile.NewProjectile(projectile.position.X, projectile.position.Y, 0, 0, mod.ProjectileType("GunTurret"), projectile.damage, projectile.knockBack, projectile.owner, 0, aiOut);
+            int p = Projectile.NewProjectile(Projectile.position.X, Projectile.position.Y, 0, 0, Mod.Find<ModProjectile>("GunTurret").Type, Projectile.damage, Projectile.knockBack, Projectile.owner, 0, aiOut);
             return true;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             if (timeLeft == 0)
             {
-                Item.NewItem((int)projectile.position.X, (int)projectile.position.Y, projectile.width, projectile.height, mod.ItemType("GunTurret"), 1, false, 0, false, false);
+                Item.NewItem((int)Projectile.position.X, (int)Projectile.position.Y, Projectile.width, Projectile.height, Mod.Find<ModItem>("GunTurret").Type, 1, false, 0, false, false);
             }
         }
     }

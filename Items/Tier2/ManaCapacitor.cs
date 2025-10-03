@@ -12,18 +12,18 @@ namespace EnemyMods.Items.Tier2
         public override void SetDefaults()
         {
 
-            item.accessory = true;
-            item.width = 10;
-            item.height = 10;
-            item.rare = 3;
+            Item.accessory = true;
+            Item.width = 10;
+            Item.height = 10;
+            Item.rare = 3;
 
-            item.value = 20000;
+            Item.value = 20000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Mana Capacitor");
-      Tooltip.SetDefault("Gives a burst of mana when low. 20 second cooldown.");
+      // DisplayName.SetDefault("Mana Capacitor");
+      // Tooltip.SetDefault("Gives a burst of mana when low. 20 second cooldown.");
     }
 
         public override void UpdateEquip(Player player)
@@ -42,11 +42,10 @@ namespace EnemyMods.Items.Tier2
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ManaBattery"), 1);
-            recipe.AddIngredient(mod.ItemType("TopazTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ManaBattery").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("TopazTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

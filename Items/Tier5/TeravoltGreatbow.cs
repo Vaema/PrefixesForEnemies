@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ModLoader;
 using Terraria.ID;
 
@@ -11,47 +12,46 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.width = 38;
-            item.height = 48;
-            item.channel = true;
-            item.noUseGraphic = true;
-            item.useStyle = 5;
-            item.useAnimation = 25;
-            item.useTime = 25;
-            item.damage = 64;
-            item.knockBack = 2;
-            item.rare = 8;
-            item.value = 80000;
-            item.shoot = 1;
-            item.useAmmo = AmmoID.Arrow;
-            item.noMelee = true;
-            item.shootSpeed = 7.4f;
-            item.ranged = true;
+            Item.width = 38;
+            Item.height = 48;
+            Item.channel = true;
+            Item.noUseGraphic = true;
+            Item.useStyle = 5;
+            Item.useAnimation = 25;
+            Item.useTime = 25;
+            Item.damage = 64;
+            Item.knockBack = 2;
+            Item.rare = 8;
+            Item.value = 80000;
+            Item.shoot = 1;
+            Item.useAmmo = AmmoID.Arrow;
+            Item.noMelee = true;
+            Item.shootSpeed = 7.4f;
+            Item.DamageType = DamageClass.Ranged;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Teravolt Greatbow");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Teravolt Greatbow");
+      // Tooltip.SetDefault("");
     }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             int projIndex = Projectile.NewProjectile(position.X - speedX, position.Y - speedY, speedX, speedY, type, -player.whoAmI - 256, knockBack, player.whoAmI);
 
             float arrowSpeed = (float)Math.Sqrt(speedX * speedX + speedY * speedY);
             //damage is arrow index
             //knockback is arrow speed
-            Projectile.NewProjectile(position.X, position.Y, 0, 0, mod.ProjectileType("TeravoltGreatbow"), damage, arrowSpeed, player.whoAmI);
+            Projectile.NewProjectile(position.X, position.Y, 0, 0, Mod.Find<ModProjectile>("TeravoltGreatbow").Type, damage, arrowSpeed, player.whoAmI);
             return false;
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("RubyTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("RubyTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

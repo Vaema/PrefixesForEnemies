@@ -7,14 +7,14 @@ namespace EnemyMods.Buffs.potions
 {
     public class ShockTonic : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Shock Tonic");
+            // DisplayName.SetDefault("Shock Tonic");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)
         {
-            MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             modPlayer.shockTonic = true;
         }
     }

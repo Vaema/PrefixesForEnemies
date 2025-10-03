@@ -9,26 +9,26 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.width = 20;
-            item.height = 20;
+            Item.width = 20;
+            Item.height = 20;
 
-            item.value = 10000;
-            item.rare = 3;
-            item.maxStack = 99;
-            item.consumable = true;
-            item.UseSound = SoundID.Item4;
-            item.useStyle = 3;
-            item.useAnimation = 30;
-            item.useTime = 30;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.maxStack = 99;
+            Item.consumable = true;
+            Item.UseSound = SoundID.Item4;
+            Item.useStyle = 3;
+            Item.useAnimation = 30;
+            Item.useTime = 30;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Mystery Token");
-      Tooltip.SetDefault("What will you get?");
+      // DisplayName.SetDefault("Mystery Token");
+      // Tooltip.SetDefault("What will you get?");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             int lootLevel = 0;
             if (NPC.downedBoss1) lootLevel++;

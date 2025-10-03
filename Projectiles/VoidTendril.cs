@@ -9,36 +9,36 @@ namespace EnemyMods.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.width = 8;
-            projectile.height = 8;
-            projectile.timeLeft = 120;
-            projectile.penetrate = -1;
-            projectile.hostile = true;
-            projectile.magic = true;
-            projectile.tileCollide = false;
+            Projectile.width = 8;
+            Projectile.height = 8;
+            Projectile.timeLeft = 120;
+            Projectile.penetrate = -1;
+            Projectile.hostile = true;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
         }
 
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Void Tendril");
+            // DisplayName.SetDefault("Void Tendril");
         }
         public override void AI()
         {
-            int d = Dust.NewDust(projectile.position, projectile.width, projectile.height, mod.DustType("VoidDust"), 0, 0);
+            int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, Mod.Find<ModDust>("VoidDust").Type, 0, 0);
             Main.dust[d].noGravity = true;
             Main.dust[d].scale += .5f;
-            projectile.velocity = projectile.velocity.RotatedByRandom(.2);
-            if(projectile.timeLeft % 10 == 0)
+            Projectile.velocity = Projectile.velocity.RotatedByRandom(.2);
+            if(Projectile.timeLeft % 10 == 0)
             {
-                int p = Projectile.NewProjectile(projectile.position, Vector2.Zero, mod.ProjectileType("VoidHitbox"), projectile.damage, projectile.knockBack);
-                Main.projectile[p].timeLeft = projectile.timeLeft + 20;
+                int p = Projectile.NewProjectile(Projectile.position, Vector2.Zero, Mod.Find<ModProjectile>("VoidHitbox").Type, Projectile.damage, Projectile.knockBack);
+                Main.projectile[p].timeLeft = Projectile.timeLeft + 20;
             }
         }
-        public override void OnHitPlayer(Player target, int damage, bool crit)
+        public override void OnHitPlayer(Player target, Player.HurtInfo info)
         {
-            MPlayer pinf = ((MPlayer)target.GetModPlayer(mod, "MPlayer"));
+            MPlayer pinf = ((MPlayer)target.GetModPlayer(Mod, "MPlayer"));
             pinf.voidBurn = Math.Max((int)(damage / 25f + target.statLifeMax2 / 200f + 1), pinf.voidBurn);
-            target.AddBuff(mod.BuffType("VoidBurn"), 480 + 100*damage);
+            target.AddBuff(Mod.Find<ModBuff>("VoidBurn").Type, 480 + 100*damage);
         }
     }
 }

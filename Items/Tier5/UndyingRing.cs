@@ -17,40 +17,40 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 80000;
-            item.rare = 8;
-            item.UseSound = SoundID.Item43;
-            item.autoReuse = false;
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 80000;
+            Item.rare = 8;
+            Item.UseSound = SoundID.Item43;
+            Item.autoReuse = false;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Ring of the Undying");
-      Tooltip.SetDefault("Refuse death for 5 seconds. One charge.");
+      // DisplayName.SetDefault("Ring of the Undying");
+      // Tooltip.SetDefault("Refuse death for 5 seconds. One charge.");
     }
 
         public override bool CanUseItem(Player player)
         {
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (play.charges[14] <= 0)
             {
                 return false;
             }
             else return true;
         }
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
-            player.AddBuff(mod.BuffType("Undying"), (int)(5 * player.magicDamage) * 60);
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            player.AddBuff(Mod.Find<ModBuff>("Undying").Type, (int)(5 * player.GetDamage(DamageClass.Magic)) * 60);
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             play.charges[14]--;
             if (play.cooldowns[14] == -1)
             {
@@ -66,11 +66,10 @@ namespace EnemyMods.Items.Tier5
         */
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("RubyTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("RubyTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

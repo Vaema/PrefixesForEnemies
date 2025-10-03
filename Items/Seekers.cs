@@ -10,35 +10,35 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.damage = 30;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 30;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 10;
-            item.useAnimation = 10;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 10000;
-            item.rare = 3;
-            item.UseSound = SoundID.Item43;
-            item.autoReuse = true;
+            Item.useTime = 10;
+            Item.useAnimation = 10;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.UseSound = SoundID.Item43;
+            Item.autoReuse = true;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood: Seekers");
-      Tooltip.SetDefault("Rapidly fires homing blood clots from your Well");
+      // DisplayName.SetDefault("Blood: Seekers");
+      // Tooltip.SetDefault("Rapidly fires homing blood clots from your Well");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             Projectile p = null;
-            int b = player.FindBuffIndex(mod.BuffType("BloodWell"));
+            int b = player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
             for (int i = 999; i >= 0; i--)
             {
-                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == mod.ProjectileType("BloodWell"))
+                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == Mod.Find<ModProjectile>("BloodWell").Type)
                 {
                     p = Main.projectile[i];
                     break;
@@ -57,7 +57,7 @@ namespace EnemyMods.Items
             Vector2 vel = distance;
             vel.Normalize();
             vel *= 12;
-            int q = Projectile.NewProjectile(p.Center.X, p.Center.Y, vel.X, vel.Y, mod.ProjectileType("BloodSeeker"), (int)(item.damage * player.magicDamage), item.knockBack, player.whoAmI);
+            int q = Projectile.NewProjectile(p.Center.X, p.Center.Y, vel.X, vel.Y, Mod.Find<ModProjectile>("BloodSeeker").Type, (int)(Item.damage * player.GetDamage(DamageClass.Magic)), Item.knockBack, player.whoAmI);
             return true;
         }
     }

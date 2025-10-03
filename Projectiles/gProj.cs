@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.ID;
 using Terraria.ModLoader;
 
 namespace EnemyMods.Projectiles
@@ -15,14 +17,14 @@ namespace EnemyMods.Projectiles
         public bool lightcrystal = false;//explode like crystal serpent
 
         public override bool InstancePerEntity => true;
-        public override bool CloneNewInstances => true;
+        protected override bool CloneNewInstances => true;
         public override void AI(Projectile projectile)
         {//todo - forking lightning in Kill(), kill projectile when far from player in AI(), homing in OnHitNPC()
             if (projectile.aiStyle == 88 && projectile.knockBack == .5f || (projectile.knockBack >= .2f && projectile.knockBack < .5f))
             {
                 projectile.hostile = false;
                 projectile.friendly = true;
-                projectile.magic = true;
+                projectile.DamageType = DamageClass.Magic;
                 projectile.penetrate = -1;
                 if((projectile.knockBack >= .45f && projectile.knockBack < .5f) && projectile.oldVelocity != projectile.velocity && Main.rand.Next(0, 4)==0)
                 {
@@ -32,7 +34,7 @@ namespace EnemyMods.Projectiles
                 }
             }
         }
-        public override void Kill(Projectile projectile, int timeLeft)
+        public override void OnKill(Projectile projectile, int timeLeft)
         {
             if (projectile.type == 158 && projectile.hostile)
             {
@@ -53,7 +55,7 @@ namespace EnemyMods.Projectiles
             //ProjInf info = (ProjInf)projectile.GetModInfo(mod, "ProjInf");
             if (shadowstrung)
             {
-                Main.PlaySound(3, (int)projectile.position.X, (int)projectile.position.Y, 1);
+                SoundEngine.PlaySound(SoundID.NPCHit1, projectile.position);
                 for (int num515 = 0; num515 < 20; num515++)
                 {
                     int num516 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 184, 0f, 0f, 0, default(Color), 1f);
@@ -94,7 +96,7 @@ namespace EnemyMods.Projectiles
             }
             if (lightcrystal)
             {
-                Main.PlaySound(2, (int)projectile.position.X, (int)projectile.position.Y, 110);
+                SoundEngine.PlaySound(SoundID.Item110, projectile.position);
                 for (int num158 = 0; num158 < 20; num158++)
                 {
                     int num159 = Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 254, projectile.velocity.X * 0.1f, projectile.velocity.Y * 0.1f, 0, default(Color), 0.5f);
@@ -130,7 +132,7 @@ namespace EnemyMods.Projectiles
             }
             if (teravolt)
             {
-                Main.PlaySound(2, (int)projectile.position.X, (int)projectile.position.Y, 94);
+                SoundEngine.PlaySound(SoundID.Item94, projectile.position);
                 int num191 = Main.rand.Next(3, 7);
                 for (int num192 = 0; num192 < num191; num192++)
                 {
@@ -155,7 +157,7 @@ namespace EnemyMods.Projectiles
             }
             if (hellfire)
             {
-                Main.PlaySound(2, (int)projectile.position.X, (int)projectile.position.Y, 14);
+                SoundEngine.PlaySound(SoundID.Item14, projectile.position);
                 for (int num507 = 0; num507 < 10; num507++)
                 {
                     Dust.NewDust(new Vector2(projectile.position.X, projectile.position.Y), projectile.width, projectile.height, 31, 0f, 0f, 100, default(Color), 1.5f);
@@ -219,7 +221,7 @@ namespace EnemyMods.Projectiles
             }
             return true;
         }
-        public override void OnHitNPC(Projectile projectile, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(Projectile projectile, NPC target, NPC.HitInfo hit, int damageDone)
         {
             if (projectile.aiStyle == 88 && (projectile.knockBack >= .2f && projectile.knockBack <= .5f))
             {
@@ -228,7 +230,7 @@ namespace EnemyMods.Projectiles
             //ProjInf info = (ProjInf)projectile.GetModInfo(mod, "ProjInf");
             if (azure && target.realLife == -1 && !target.boss)
             {
-                target.AddBuff(mod.BuffType("Slow"), 300);
+                target.AddBuff(Mod.Find<ModBuff>("Slow").Type, 300);
             }
         }
         public override bool? CanHitNPC(Projectile projectile, NPC target)

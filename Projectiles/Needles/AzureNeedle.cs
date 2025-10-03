@@ -1,4 +1,6 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.Audio;
+using Terraria.ID;
+using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using System;
@@ -9,48 +11,48 @@ namespace EnemyMods.Projectiles.Needles
     {
         public override void SetDefaults()
         {
-            projectile.width = 4;
-            projectile.height = 4;
-            projectile.timeLeft = 600;
-            projectile.thrown = true;
-            projectile.aiStyle = 0;
-            projectile.extraUpdates = 1;
-            projectile.friendly = true;
+            Projectile.width = 4;
+            Projectile.height = 4;
+            Projectile.timeLeft = 600;
+            Projectile.DamageType = DamageClass.Throwing;
+            Projectile.aiStyle = 0;
+            Projectile.extraUpdates = 1;
+            Projectile.friendly = true;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Azure Needle");
+            // DisplayName.SetDefault("Azure Needle");
         }
         public override void AI()
         {
-            Lighting.AddLight((int)(projectile.Center.X / 16f), (int)(projectile.Center.Y / 16f), .4f, .4f, 1f);
-            projectile.rotation = (float)System.Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + 1.57f;
+            Lighting.AddLight((int)(Projectile.Center.X / 16f), (int)(Projectile.Center.Y / 16f), .4f, .4f, 1f);
+            Projectile.rotation = (float)System.Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 1.57f;
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
             for (int num259 = 0; num259 < 30; num259++)
             {
-                int d = Dust.NewDust(projectile.position, projectile.width, projectile.height, 172, 0f, 0f, 0, default(Color), 2f);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, 0f, 0f, 0, default(Color), 2f);
                 Main.dust[d].noGravity = true;
                 Main.dust[d].velocity.Normalize();
                 Main.dust[d].velocity *= 6;
             }
-            projectile.position = projectile.Center;
-            projectile.width = (projectile.height = 115);
-            projectile.Center = projectile.position;
-            projectile.penetrate = -1;
-            projectile.damage = (int)(projectile.damage * 1.3);
-            projectile.knockBack *= 1.2f;
-            projectile.Damage();
+            Projectile.position = Projectile.Center;
+            Projectile.width = (Projectile.height = 115);
+            Projectile.Center = Projectile.position;
+            Projectile.penetrate = -1;
+            Projectile.damage = (int)(Projectile.damage * 1.3);
+            Projectile.knockBack *= 1.2f;
+            Projectile.Damage();
             return true;
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             for (int i = 0; i < 5; i++)
             {
-                int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, 172, 0, 0, 100, default(Color), 0.6f);
+                int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 172, 0, 0, 100, default(Color), 0.6f);
             }
-            Main.PlaySound(0, (int)projectile.position.X, (int)projectile.position.Y);
+            SoundEngine.PlaySound(SoundID.Dig, Projectile.position);
         }
     }
 }

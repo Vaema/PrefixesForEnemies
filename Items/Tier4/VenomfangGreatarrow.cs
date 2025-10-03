@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 using Terraria.ID;
 
 namespace EnemyMods.Items.Tier4
@@ -8,33 +9,32 @@ namespace EnemyMods.Items.Tier4
         public override void SetDefaults()
             {
 
-                item.damage = 20;
-                item.ranged = true;
-                item.width = 18;
-                item.height = 48;
-                item.maxStack = 999;
+                Item.damage = 20;
+                Item.DamageType = DamageClass.Ranged;
+                Item.width = 18;
+                Item.height = 48;
+                Item.maxStack = 999;
 
-                item.consumable = true;
-                item.knockBack = 3f;
-                item.value = 1000;
-                item.rare = 6;
-                item.shoot = mod.ProjectileType("VenomfangGreatarrow");
-                item.shootSpeed = -2f;
-                item.ammo = AmmoID.Arrow;
+                Item.consumable = true;
+                Item.knockBack = 3f;
+                Item.value = 1000;
+                Item.rare = 6;
+                Item.shoot = Mod.Find<ModProjectile>("VenomfangGreatarrow").Type;
+                Item.shootSpeed = -2f;
+                Item.ammo = AmmoID.Arrow;
             }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Venomfang Greatarrow");
-      Tooltip.SetDefault("Too heavy for normal bows to use effectively");
+      // DisplayName.SetDefault("Venomfang Greatarrow");
+      // Tooltip.SetDefault("Too heavy for normal bows to use effectively");
     }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("EmeraldTicket"));
-            recipe.SetResult(this, 100);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe(100);
+            recipe.AddIngredient(Mod.Find<ModItem>("EmeraldTicket").Type);
+            recipe.Register();
         }
     }
 }

@@ -11,33 +11,33 @@ namespace EnemyMods.Items
         {
 
             //item.damage = 11;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 10000;
-            item.rare = 2;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 10000;
+            Item.rare = 2;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood: Return");
-      Tooltip.SetDefault("Commands your blood well to return to you");
+      // DisplayName.SetDefault("Blood: Return");
+      // Tooltip.SetDefault("Commands your blood well to return to you");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             Projectile p = null;
             for (int i = 999; i >= 0; i--)
             {
-                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == mod.ProjectileType("BloodWell"))
+                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == Mod.Find<ModProjectile>("BloodWell").Type)
                 {
                     p = Main.projectile[i];
                     break;

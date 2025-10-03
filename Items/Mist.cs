@@ -10,35 +10,35 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.damage = 15;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 15;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 10000;
-            item.rare = 3;
-            item.UseSound = SoundID.Item43;
-            item.autoReuse = false;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.UseSound = SoundID.Item43;
+            Item.autoReuse = false;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood: Mist");
-      Tooltip.SetDefault("Your Well emits a pulse of fine blood mist");
+      // DisplayName.SetDefault("Blood: Mist");
+      // Tooltip.SetDefault("Your Well emits a pulse of fine blood mist");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             Projectile p = null;
-            int b = player.FindBuffIndex(mod.BuffType("BloodWell"));
+            int b = player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
             for (int j = 0; j < 1000; j++)
             {
-                if (Main.projectile[j].owner == player.whoAmI && Main.projectile[j].type == mod.ProjectileType("BloodWell"))
+                if (Main.projectile[j].owner == player.whoAmI && Main.projectile[j].type == Mod.Find<ModProjectile>("BloodWell").Type)
                 {
                     p = Main.projectile[j];
                     break;
@@ -62,7 +62,7 @@ namespace EnemyMods.Items
             for (i = 0; i < 30; i++)
             {
                 offsetAngle = startAngle + deltaAngle * i;
-                Projectile.NewProjectile(p.Center.X, p.Center.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), mod.ProjectileType("BloodMist"), (int)(item.damage * player.magicDamage), item.knockBack, player.whoAmI);
+                Projectile.NewProjectile(p.Center.X, p.Center.Y, baseSpeed * (float)Math.Sin(offsetAngle), baseSpeed * (float)Math.Cos(offsetAngle), Mod.Find<ModProjectile>("BloodMist").Type, (int)(Item.damage * player.GetDamage(DamageClass.Magic)), Item.knockBack, player.whoAmI);
             }
             return true;
         }

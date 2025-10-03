@@ -12,24 +12,24 @@ namespace EnemyMods.Items.Tier3
         public override void SetDefaults()
         {
 
-            item.accessory = true;
-            item.width = 10;
-            item.height = 10;
-            item.rare = 4;
+            Item.accessory = true;
+            Item.width = 10;
+            Item.height = 10;
+            Item.rare = 4;
 
 
-            item.value = 30000;
+            Item.value = 30000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Sorceror's Capacitor");
-      Tooltip.SetDefault("Gives a burst of mana when low. 30 second cooldown.\nMagic damage + 10%");
+      // DisplayName.SetDefault("Sorceror's Capacitor");
+      // Tooltip.SetDefault("Gives a burst of mana when low. 30 second cooldown.\nMagic damage + 10%");
     }
 
         public override void UpdateEquip(Player player)
         {
-            player.magicDamage += .10f;
+            player.GetDamage(DamageClass.Magic) += .10f;
             if (cooldown > 0)
             {
                 cooldown--;
@@ -44,12 +44,11 @@ namespace EnemyMods.Items.Tier3
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ManaCapacitor"), 1);
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ManaCapacitor").Type, 1);
             recipe.AddIngredient(ItemID.SorcererEmblem, 1);
-            recipe.AddIngredient(mod.ItemType("SapphireTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("SapphireTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

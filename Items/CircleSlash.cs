@@ -9,35 +9,35 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.damage = 50;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 50;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 30;
-            item.useAnimation = 30;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 10000;
-            item.rare = 3;
-            item.UseSound = SoundID.Item43;
-            item.autoReuse = false;
+            Item.useTime = 30;
+            Item.useAnimation = 30;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.UseSound = SoundID.Item43;
+            Item.autoReuse = false;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blood: Circle Slash");
-      Tooltip.SetDefault("A blade of blood performs a slash around your Well");
+      // DisplayName.SetDefault("Blood: Circle Slash");
+      // Tooltip.SetDefault("A blade of blood performs a slash around your Well");
     }
 
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
             Projectile p = null;
-            int b = player.FindBuffIndex(mod.BuffType("BloodWell"));
+            int b = player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
             for (int i = 0; i < 1000; i++)
             {
-                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == mod.ProjectileType("BloodWell"))
+                if (Main.projectile[i].owner == player.whoAmI && Main.projectile[i].type == Mod.Find<ModProjectile>("BloodWell").Type)
                 {
                     p = Main.projectile[i];
                     break;
@@ -52,7 +52,7 @@ namespace EnemyMods.Items
                 return false;
             }
             player.buffTime[b] -= 120;
-            int q = Projectile.NewProjectile(p.position.X, p.position.Y, 0, 0, mod.ProjectileType("BloodSword"), (int)(item.damage * player.magicDamage), item.knockBack, player.whoAmI, p.whoAmI);
+            int q = Projectile.NewProjectile(p.position.X, p.position.Y, 0, 0, Mod.Find<ModProjectile>("BloodSword").Type, (int)(Item.damage * player.GetDamage(DamageClass.Magic)), Item.knockBack, player.whoAmI, p.whoAmI);
             return true;
         }
     }

@@ -9,42 +9,42 @@ namespace EnemyMods.Items.Tier3
         public override void SetDefaults()
         {
 
-            item.damage = 25;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 25;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 30000;
-            item.rare = 4;
-            item.UseSound = SoundID.Item43;
-            item.autoReuse = false;
-            item.shootSpeed = 0f;
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 30000;
+            Item.rare = 4;
+            Item.UseSound = SoundID.Item43;
+            Item.autoReuse = false;
+            Item.shootSpeed = 0f;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Fire Rain Ring");
-      Tooltip.SetDefault("Rains fire. One charge.");
+      // DisplayName.SetDefault("Fire Rain Ring");
+      // Tooltip.SetDefault("Rains fire. One charge.");
     }
 
         public override bool CanUseItem(Player player)
         {
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (play.charges[6] <= 0)
             {
                 return false;
             }
             else return true;
         }
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
-            int p = Projectile.NewProjectile(Main.MouseWorld.X - 100, player.Center.Y - 900, 0, 0, mod.ProjectileType("FireRainSpawner"), item.damage, item.knockBack, item.owner);
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            int p = Projectile.NewProjectile(Main.MouseWorld.X - 100, player.Center.Y - 900, 0, 0, Mod.Find<ModProjectile>("FireRainSpawner").Type, Item.damage, Item.knockBack, Item.playerIndexTheItemIsReservedFor);
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             play.charges[6]--;
             if (play.cooldowns[6] == -1)
             {
@@ -54,11 +54,10 @@ namespace EnemyMods.Items.Tier3
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("SapphireTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("SapphireTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

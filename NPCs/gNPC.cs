@@ -1,5 +1,7 @@
 ﻿using System;
 using Terraria;
+using Terraria.Audio;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Microsoft.Xna.Framework;
@@ -48,7 +50,7 @@ namespace EnemyMods.NPCs
         //int[] zeroValTypes = {36, 68, 115, 116, 117, 128, 129, 130, 131, 395,  };
         //int[] doomsayerTypes = {2, 3, 6, 7, 31, 32, 34, 42, 62,  };//types that can recieve the doomsayer suffix, not implemented
         public override bool InstancePerEntity => true;
-        public override bool CloneNewInstances => true;
+        protected override bool CloneNewInstances => true;
         public override void SetDefaults(NPC npc)
         {
             if (Main.netMode == 1 || npc == null || npc.FullName == null)//if multiplayer, but not server. 1 is client in MP, 2 is server. Prefixes are sent to client by server in MP.
@@ -535,13 +537,13 @@ namespace EnemyMods.NPCs
                 parasiteTimeLeft--;
             }
         }
-        public override void OnHitPlayer(NPC npc, Player target, int damage, bool crit)
+        public override void OnHitPlayer(NPC npc, Player target, Player.HurtInfo hurtInfo)
         {
             if (prefixes.Contains("Void-Touched"))
             {
-                MPlayer pinf = ((MPlayer)target.GetModPlayer(mod, "MPlayer"));
+                MPlayer pinf = ((MPlayer)target.GetModPlayer(Mod, "MPlayer"));
                 pinf.voidBurn = Math.Max((int)(damage / 25f + target.statLifeMax2 / 200f + 1), pinf.voidBurn);
-                target.AddBuff(mod.BuffType("VoidBurn"), 480 + 100 * damage);
+                target.AddBuff(Mod.Find<ModBuff>("VoidBurn").Type, 480 + 100 * damage);
             }
             if (prefixes.Contains("Burning "))
             {
@@ -670,7 +672,7 @@ namespace EnemyMods.NPCs
                 }
             }
         }
-        public override void ModifyHitPlayer(NPC npc, Player target, ref int damage, ref bool crit)
+        public override void ModifyHitPlayer(NPC npc, Player target, ref Player.HurtModifiers modifiers)
         {
             if (prefixes.Contains("Magebane "))
             {
@@ -711,7 +713,7 @@ namespace EnemyMods.NPCs
                 lives--;
                 npc.damage = (int)(npc.damage * 1.1);
                 npc.life = npc.lifeMax;
-                Main.PlaySound(15, npc.position, 0);
+                SoundEngine.PlaySound(SoundID.Roar, npc.position);
                 return false;
             }
             return true;
@@ -767,8 +769,8 @@ namespace EnemyMods.NPCs
             }
             if ((parasiteTimeLeft + 1) / 15 > 1)
             {
-                npc.lifeRegen -= (int)(125 * Main.player[parasiteOwner].magicDamage * (1 + Main.player[parasiteOwner].magicCrit / 100.0));
-                damage += (int)(125 * Main.player[parasiteOwner].magicDamage * (1 + Main.player[parasiteOwner].magicCrit / 100.0) / 8);
+                npc.lifeRegen -= (int)(125 * Main.player[parasiteOwner].GetDamage(DamageClass.Magic) * (1 + Main.player[parasiteOwner].GetCritChance(DamageClass.Magic) / 100.0));
+                damage += (int)(125 * Main.player[parasiteOwner].GetDamage(DamageClass.Magic) * (1 + Main.player[parasiteOwner].GetCritChance(DamageClass.Magic) / 100.0) / 8);
                 if (Main.rand.Next(0, 8) == 0)
                 {
                     for (int i = 0; i < 5; i++)
@@ -791,22 +793,22 @@ namespace EnemyMods.NPCs
             {
                 npc.lifeRegen -= voidBurn / 2 / (prefixes.Contains("Void-Touched") ? 3 : 1);
                 damage += voidBurn / 16 / (prefixes.Contains("Void-Touched") ? 3 : 1);
-                if (Main.rand.Next(5) == 0) { int d = Dust.NewDust(npc.position, npc.width, npc.height, mod.DustType("VoidDust"), 0, 0, 0, default(Color), 1f); }
+                if (Main.rand.Next(5) == 0) { int d = Dust.NewDust(npc.position, npc.width, npc.height, Mod.Find<ModDust>("VoidDust").Type, 0, 0, 0, default(Color), 1f); }
             }
             if (prefixes.Contains("Regenerating ") && npc.FindBuffIndex(BuffID.OnFire) == -1 && npc.FindBuffIndex(BuffID.Poisoned) == -1 && npc.FindBuffIndex(BuffID.Venom) == -1 && npc.FindBuffIndex(BuffID.CursedInferno) == -1)
             {
                 npc.lifeRegen += (int)Math.Sqrt(npc.lifeMax - npc.life) / 2 + 1;
             }
         }
-        public override bool PreNPCLoot(NPC npc)
+        public override bool PreKill(NPC npc)
         {
             if(npc.type == NPCID.KingSlime && prefixes.Contains("Void-Touched #"))
             {
                 npc.type = -1;
             }
-            return base.PreNPCLoot(npc);
+            return base.PreKill(npc);
         }
-        public override void NPCLoot(NPC npc)
+        public override void OnKill(NPC npc)
         {
 
             if (parasiteTimeLeft > 0)
@@ -814,18 +816,18 @@ namespace EnemyMods.NPCs
                 NPC target = getClosestNPC(npc);
                 if (npc.position == target.position)
                 {
-                    int p = Projectile.NewProjectile(npc.position.X, npc.position.Y, 0, 0, mod.ProjectileType("NebulaParasite"), 1, 0, parasiteOwner);
+                    int p = Projectile.NewProjectile(npc.position.X, npc.position.Y, 0, 0, Mod.Find<ModProjectile>("NebulaParasite").Type, 1, 0, parasiteOwner);
                 }
                 else if (npc.Distance(target.position) < 800)
                 {
                     Vector2 vel = target.position - npc.position;
                     vel.Normalize();
-                    int p = Projectile.NewProjectile(npc.position.X, npc.position.Y, vel.X * 6, vel.Y * 6, mod.ProjectileType("NebulaParasite"), 1, 0, parasiteOwner);
+                    int p = Projectile.NewProjectile(npc.position.X, npc.position.Y, vel.X * 6, vel.Y * 6, Mod.Find<ModProjectile>("NebulaParasite").Type, 1, 0, parasiteOwner);
                 }
             }
             if (suffixes.Length > 1)
             {
-                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("ChoiceToken"));
+                Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("ChoiceToken").Type);
             }
             if (prefixes.Contains("Void-Touched"))
             {
@@ -839,39 +841,39 @@ namespace EnemyMods.NPCs
                 }
                 else
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("VoidEssence"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("VoidEssence").Type);
                 }
             }
             if (prefixes.Contains("Rare "))
             {
                 if (NPC.downedAncientCultist)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("AmberToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("AmberToken").Type);
                 }
                 else if (NPC.downedPlantBoss)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("RubyToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("RubyToken").Type);
                 }
                 else if (NPC.downedMechBossAny)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("EmeraldToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("EmeraldToken").Type);
                 }
                 else if (Main.hardMode)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("SapphireToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("SapphireToken").Type);
                 }
                 else if (NPC.downedBoss3 || NPC.downedQueenBee)
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("TopazToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("TopazToken").Type);
                 }
                 else
                 {
-                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, mod.ItemType("AmethystToken"));
+                    Item.NewItem((int)npc.position.X, (int)npc.position.Y, npc.width, npc.height, Mod.Find<ModItem>("AmethystToken").Type);
                 }
             }
             if (prefixes.Contains("Martyr "))
             {
-                int p = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, mod.ProjectileType("MartyrBomb"), (int)(npc.damage * 1.5), 10);
+                int p = Projectile.NewProjectile(npc.Center.X, npc.Center.Y, 0, 0, Mod.Find<ModProjectile>("MartyrBomb").Type, (int)(npc.damage * 1.5), 10);
             }
             if (prefixes.Contains("Splitter "))
             {
@@ -888,7 +890,7 @@ namespace EnemyMods.NPCs
                 }
             }
         }
-        public override void OnHitByProjectile(NPC npc, Projectile projectile, int damage, float knockback, bool crit)
+        public override void OnHitByProjectile(NPC npc, Projectile projectile, NPC.HitInfo hit, int damageDone)
         {
             if (prefixes.Contains("Mirrored "))
             {
@@ -919,7 +921,7 @@ namespace EnemyMods.NPCs
                 }
             }
         }
-        public override void OnHitByItem(NPC npc, Player player, Item item, int damage, float knockback, bool crit)
+        public override void OnHitByItem(NPC npc, Player player, Item item, NPC.HitInfo hit, int damageDone)
         {
             if (prefixes.Contains("Stealthy "))
             {
@@ -945,7 +947,7 @@ namespace EnemyMods.NPCs
                 }
             }
         }
-        public override bool StrikeNPC(NPC npc, ref double damage, int defense, ref float knockback, int hitDirection, ref bool crit)
+        public override void ModifyIncomingHit(NPC npc, ref NPC.HitModifiers modifiers)
         {
             if (prefixes.Contains("Pyophobic "))
             {
@@ -958,11 +960,11 @@ namespace EnemyMods.NPCs
             }
             return true;
         }
-        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref int damage, ref float knockback, ref bool crit)
+        public override void ModifyHitByItem(NPC npc, Player player, Item item, ref NPC.HitModifiers modifiers)
         {
             if (prefixes.Contains("Adaptive "))
             {
-                if (item.melee)
+                if (item.CountsAsClass(DamageClass.Melee))
                 {
                     if (meleeResist)
                     {
@@ -971,7 +973,7 @@ namespace EnemyMods.NPCs
                     meleeResist = true;
                     meleeResistTimer = 180;
                 }
-                if (item.ranged)
+                if (item.CountsAsClass(DamageClass.Ranged))
                 {
                     if (rangedResist)
                     {
@@ -980,7 +982,7 @@ namespace EnemyMods.NPCs
                     rangedResist = true;
                     rangedResistTimer = 180;
                 }
-                if (item.magic)
+                if (item.CountsAsClass(DamageClass.Magic))
                 {
                     if (magicResist)
                     {
@@ -989,7 +991,7 @@ namespace EnemyMods.NPCs
                     magicResist = true;
                     magicResistTimer = 180;
                 }
-                if (item.summon)
+                if (item.CountsAsClass(DamageClass.Summon))
                 {
                     if (minionResist)
                     {
@@ -999,20 +1001,20 @@ namespace EnemyMods.NPCs
                     minionResistTimer = 180;
                 }
             }
-            if (npc.FindBuffIndex(mod.BuffType("Suspended")) >= 0)
+            if (npc.FindBuffIndex(Mod.Find<ModBuff>("Suspended").Type) >= 0)
             {
                 damage = (int)(damage * 1.3);
             }
-            if (gunbladeMeleeDebuff > 0 && item.melee)
+            if (gunbladeMeleeDebuff > 0 && item.CountsAsClass(DamageClass.Melee))
             {
                 damage = (int)(damage * 1 + (.1 * gunbladeMeleeDebuff));
             }
         }
-        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitByProjectile(NPC npc, Projectile projectile, ref NPC.HitModifiers modifiers)
         {
             if (prefixes.Contains("Adaptive "))
             {
-                if (projectile.melee)
+                if (projectile.CountsAsClass(DamageClass.Melee))
                 {
                     if (meleeResist)
                     {
@@ -1021,7 +1023,7 @@ namespace EnemyMods.NPCs
                     meleeResist = true;
                     meleeResistTimer = 180;
                 }
-                if (projectile.ranged)
+                if (projectile.CountsAsClass(DamageClass.Ranged))
                 {
                     if (rangedResist)
                     {
@@ -1030,7 +1032,7 @@ namespace EnemyMods.NPCs
                     rangedResist = true;
                     rangedResistTimer = 180;
                 }
-                if (projectile.magic)
+                if (projectile.CountsAsClass(DamageClass.Magic))
                 {
                     if (magicResist)
                     {
@@ -1049,11 +1051,11 @@ namespace EnemyMods.NPCs
                     minionResistTimer = 180;
                 }
             }
-            if (npc.FindBuffIndex(mod.BuffType("Suspended")) >= 0)
+            if (npc.FindBuffIndex(Mod.Find<ModBuff>("Suspended").Type) >= 0)
             {
                 damage = (int)(damage * 1.3);
             }
-            if (gunbladeRangedDebuff > 0 && projectile.ranged)
+            if (gunbladeRangedDebuff > 0 && projectile.CountsAsClass(DamageClass.Ranged))
             {
                 damage = (int)(damage * 1 + (.1 * gunbladeRangedDebuff));
             }
@@ -1067,7 +1069,7 @@ namespace EnemyMods.NPCs
                 return;
             }
 
-            float damageMult = (Main.hardMode ? 1f : .8f) / (Main.expertMode ? Main.expertDamage : 1);//20% reduction PreHM, removed additional damage mult for expert
+            float damageMult = (Main.hardMode ? 1f : .8f) / (Main.expertMode ? Main.GameModeInfo.EnemyDamageMultiplier : 1);//20% reduction PreHM, removed additional damage mult for expert
             damageMult /= 2;//removes 2x mult for hostile projectiles
             Player target = Main.player[npc.target];
             MPlayer targetInfo;
@@ -1077,7 +1079,7 @@ namespace EnemyMods.NPCs
             }
             else
             {
-                targetInfo = ((MPlayer)target.GetModPlayer(mod, "MPlayer"));
+                targetInfo = ((MPlayer)target.GetModPlayer(Mod, "MPlayer"));
             }
             int distance = (int)Math.Sqrt((npc.Center.X - target.Center.X) * (npc.Center.X - target.Center.X) + (npc.Center.Y - target.Center.Y) * (npc.Center.Y - target.Center.Y));
 
@@ -1172,7 +1174,7 @@ namespace EnemyMods.NPCs
                     {
                         int dust = Dust.NewDust(npc.position, npc.width, npc.height, DustID.Shadowflame);
                     }
-                    Main.PlaySound(2, npc.position, 8);
+                    SoundEngine.PlaySound(SoundID.Item8, npc.position);
                     timerSuffix = 0;
                 }
             }
@@ -1575,7 +1577,7 @@ namespace EnemyMods.NPCs
                 timerSuffix = Math.Min(timerSuffix + 1, 90);
                 if (Main.rand.Next(0, 80) == 0)
                 {
-                    Main.PlaySound(SoundLoader.customSoundType, npc.position, mod.GetSoundSlot(SoundType.Custom, "Sounds/Thunder"));
+                    SoundEngine.PlaySound(SoundLoader.customSoundType, npc.position, Mod.GetSoundSlot(SoundType.Custom, "Sounds/Thunder"));
                     Vector2 vector82 = new Vector2(Main.rand.Next(-50, 51), 800);
                     float ai = Main.rand.Next(100);
                     Vector2 vector83 = Vector2.Normalize(vector82.RotatedByRandom(0.78539818525314331)) * 8;
@@ -1583,7 +1585,7 @@ namespace EnemyMods.NPCs
                 }
                 if (timerSuffix >= 60 && Collision.CanHitLine(target.position, target.width, target.height, npc.position, npc.width, npc.height))
                 {
-                    Main.PlaySound(SoundLoader.customSoundType, npc.position, mod.GetSoundSlot(SoundType.Custom, "Sounds/Thunder"));
+                    SoundEngine.PlaySound(SoundLoader.customSoundType, npc.position, Mod.GetSoundSlot(SoundType.Custom, "Sounds/Thunder"));
                     Vector2 vector82 = target.position - npc.position;
                     float ai = Main.rand.Next(100);
                     Vector2 vector83 = Vector2.Normalize(vector82.RotatedByRandom(0.78539818525314331)) * 8;
@@ -1687,12 +1689,12 @@ namespace EnemyMods.NPCs
             {
                 if (Main.rand.Next(0, 8) == 0)
                 {
-                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, mod.DustType("VoidDust"));
+                    int dust = Dust.NewDust(npc.position, npc.width, npc.height, Mod.Find<ModDust>("VoidDust").Type);
                     Main.dust[dust].velocity *= .2f;
                 }
                 if (Collision.CanHitLine(target.position, target.width, target.height, npc.position, npc.width, npc.height))
                 {
-                    target.AddBuff(mod.BuffType("VoidTarget"), 300);
+                    target.AddBuff(Mod.Find<ModBuff>("VoidTarget").Type, 300);
                     target.AddBuff(BuffID.Darkness, 300);
                     //voidTargetDamage = npc.damage;
                 }
@@ -1735,7 +1737,7 @@ namespace EnemyMods.NPCs
                 if (Main.netMode == 2)
                 {
                     //send packet containing npc.whoAmI and all prefixes/suffixes.
-                    var netMessage = mod.GetPacket();
+                    var netMessage = Mod.GetPacket();
                     netMessage.Write("Prefixes");
                     netMessage.Write(npc.whoAmI);
                     bool hasPrefix = prefixes.Length > 0;
@@ -1792,7 +1794,7 @@ namespace EnemyMods.NPCs
                 nameConfirmed = true;
             }
             //EXPERIMENTAL STUN DEBUFF
-            if (npc.FindBuffIndex(mod.BuffType("Stunned")) >= 0 || npc.FindBuffIndex(mod.BuffType("Suspended")) >= 0)
+            if (npc.FindBuffIndex(Mod.Find<ModBuff>("Stunned").Type) >= 0 || npc.FindBuffIndex(Mod.Find<ModBuff>("Suspended").Type) >= 0)
             {
                 return false;
             }
@@ -1820,7 +1822,7 @@ namespace EnemyMods.NPCs
             base.PostAI(npc);
         }
 
-        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+        public override bool PreDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
 
             int shaderID = 0;
@@ -1858,14 +1860,14 @@ namespace EnemyMods.NPCs
             data.origin = npc.Center;
             data.position = npc.position - Main.screenPosition;
             data.scale = new Vector2(npc.scale, npc.scale);
-            data.texture = Main.npcTexture[npc.type];
+            data.texture = TextureAssets.Npc[npc.type].Value;
             data.sourceRect = npc.frame;//data.texture.Frame(1, Main.npcFrameCount[npc.type], 0, npc.frame);
             GameShaders.Armor.ApplySecondary(shaderID, npc, data);
 
             return true;
         }
 
-        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Color drawColor)
+        public override void PostDraw(NPC npc, SpriteBatch spriteBatch, Vector2 screenPos, Color drawColor)
         {
             spriteBatch.End();
             spriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend, SamplerState.LinearClamp, DepthStencilState.None, RasterizerState.CullCounterClockwise, null, Matrix.CreateScale(1f, 1f, 1f) * Matrix.CreateRotationZ(0f) * Matrix.CreateTranslation(new Vector3(0f, 0f, 0f)));
@@ -1948,20 +1950,20 @@ namespace EnemyMods.NPCs
                         {
                             int num20 = Main.rand.Next(num11, num12);
                             int num21 = Main.rand.Next(num13, num14);
-                            if (Main.tile[num20, num21].nactive() && Main.tileSolid[(int)Main.tile[num20, num21].type])
+                            if (Main.tile[num20, num21].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num20, num21].TileType])
                             {
                                 goto IL_7E8;
                             }
-                            if ((!Main.wallHouse[(int)Main.tile[num20, num21].wall] || n >= 999) && (type != 50 || n >= 500 || Main.tile[num21, num21].wall <= 0))
+                            if ((!Main.wallHouse[(int)Main.tile[num20, num21].WallType] || n >= 999) && (type != 50 || n >= 500 || Main.tile[num21, num21].WallType <= 0))
                             {
                                 int num22 = num21;
                                 while (num22 < Main.maxTilesY)
                                 {
-                                    if (Main.tile[num20, num22].nactive() && Main.tileSolid[(int)Main.tile[num20, num22].type])
+                                    if (Main.tile[num20, num22].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num20, num22].TileType])
                                     {
                                         if (num20 < num15 || num20 > num16 || num22 < num17 || num22 > num18 || n == 999)
                                         {
-                                            ushort arg_66F_0 = Main.tile[num20, num22].type;
+                                            ushort arg_66F_0 = Main.tile[num20, num22].TileType;
                                             num9 = num20;
                                             num10 = num22;
                                             flag = true;
@@ -2014,7 +2016,7 @@ namespace EnemyMods.NPCs
                                     {
                                         for (int num29 = num26; num29 < num27; num29++)
                                         {
-                                            if (Main.tile[num28, num29].nactive() && Main.tileSolid[(int)Main.tile[num28, num29].type])
+                                            if (Main.tile[num28, num29].HasUnactuatedTile && Main.tileSolid[(int)Main.tile[num28, num29].TileType])
                                             {
                                                 flag = false;
                                                 break;

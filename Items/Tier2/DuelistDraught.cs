@@ -11,33 +11,32 @@ namespace EnemyMods.Items.Tier2
         {
 
 
-            item.maxStack = 30;
-            item.value = 2000;
-            item.rare = 3;
-            item.useAnimation = 17;
-            item.useTime = 17;
-            item.useStyle = 2;
-            item.consumable = true;
-            item.useTurn = true;
-            item.width = 14;
-            item.height = 24;
-            item.UseSound = SoundID.Item3;
-            item.buffType = mod.BuffType("DuelistDraught");
-            item.buffTime = 36000;
+            Item.maxStack = 30;
+            Item.value = 2000;
+            Item.rare = 3;
+            Item.useAnimation = 17;
+            Item.useTime = 17;
+            Item.useStyle = 2;
+            Item.consumable = true;
+            Item.useTurn = true;
+            Item.width = 14;
+            Item.height = 24;
+            Item.UseSound = SoundID.Item3;
+            Item.buffType = Mod.Find<ModBuff>("DuelistDraught").Type;
+            Item.buffTime = 36000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Duelist Draught");
-      Tooltip.SetDefault("Deal more and take less damage to the last enemy hit");
+      // DisplayName.SetDefault("Duelist Draught");
+      // Tooltip.SetDefault("Deal more and take less damage to the last enemy hit");
     }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("TopazTicket"));
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("TopazTicket").Type);
+            recipe.Register();
         }
     }
 }

@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs.potions
 {
     public class MysteriousPhilter : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Mysterious Philter");
+            // DisplayName.SetDefault("Mysterious Philter");
             Main.buffNoSave[Type] = true;
             Main.debuff[Type] = true;
         }

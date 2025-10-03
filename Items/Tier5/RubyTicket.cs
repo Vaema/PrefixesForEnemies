@@ -7,17 +7,17 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.width = 20;
-            item.height = 20;
-            item.value = 1000;
-            item.rare = 8;
-            item.maxStack = 99;
+            Item.width = 20;
+            Item.height = 20;
+            Item.value = 1000;
+            Item.rare = 8;
+            Item.maxStack = 99;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Ruby Cosmic Ticket");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Ruby Cosmic Ticket");
+      // Tooltip.SetDefault("");
     }
 
     }

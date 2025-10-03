@@ -7,26 +7,26 @@ namespace EnemyMods.Items.Turrets
         public override void SetDefaults()
             {
 
-                item.damage = 10;
-                item.ranged = true;
-                item.width = 12;
-                item.height = 12;
-                item.maxStack = 999;
-                item.consumable = true;
-                item.useStyle = 1;
-                item.noUseGraphic = true;
-                item.knockBack = 3f;
-                item.value = 400;
-                item.rare = 3;
-                item.shoot = mod.ProjectileType("RocketTurretCapsule");
-                item.shootSpeed = 7f;
-                item.noMelee = true;
+                Item.damage = 10;
+                Item.DamageType = DamageClass.Ranged;
+                Item.width = 12;
+                Item.height = 12;
+                Item.maxStack = 999;
+                Item.consumable = true;
+                Item.useStyle = 1;
+                Item.noUseGraphic = true;
+                Item.knockBack = 3f;
+                Item.value = 400;
+                Item.rare = 3;
+                Item.shoot = Mod.Find<ModProjectile>("RocketTurretCapsule").Type;
+                Item.shootSpeed = 7f;
+                Item.noMelee = true;
             }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Rocket Turret");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Rocket Turret");
+      // Tooltip.SetDefault("");
     }
 
         }

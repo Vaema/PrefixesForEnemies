@@ -5,18 +5,18 @@ namespace EnemyMods.Buffs
 {
     public class RocketTurret : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Rocket Turret");
-            Description.SetDefault("");//add this
+            // DisplayName.SetDefault("Rocket Turret");
+            // Description.SetDefault("");//add this
             Main.buffNoSave[Type] = true;
             Main.buffNoTimeDisplay[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
-            if (player.ownedProjectileCounts[mod.ProjectileType("RocketTurret")] > 0)
+            MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
+            if (player.ownedProjectileCounts[Mod.Find<ModProjectile>("RocketTurret").Type] > 0)
             {
                 modPlayer.rocketTurret = true;
             }

@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs
 {
     public class BloodArmor : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Armor");
+            // DisplayName.SetDefault("Blood Armor");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)

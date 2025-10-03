@@ -9,7 +9,7 @@ namespace EnemyMods
     {
         public EnemyMods()
         {
-            Properties = new ModProperties()
+            Properties/* tModPorter Note: Removed. Instead, assign the properties directly (ContentAutoloadingEnabled, GoreAutoloadingEnabled, MusicAutoloadingEnabled, and BackgroundAutoloadingEnabled) */ = new ModProperties()
             {
                 Autoload = true,
                 AutoloadGores = true,

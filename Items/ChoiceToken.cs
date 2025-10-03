@@ -7,17 +7,17 @@ namespace EnemyMods.Items
         public override void SetDefaults()
         {
 
-            item.width = 20;
-            item.height = 20;
-            item.value = 10000;
-            item.rare = 3;
-            item.maxStack = 99;
+            Item.width = 20;
+            Item.height = 20;
+            Item.value = 10000;
+            Item.rare = 3;
+            Item.maxStack = 99;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Choice Token");
-      Tooltip.SetDefault("");
+      // DisplayName.SetDefault("Choice Token");
+      // Tooltip.SetDefault("");
     }
 
     }

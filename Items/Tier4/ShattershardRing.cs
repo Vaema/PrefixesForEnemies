@@ -9,42 +9,42 @@ namespace EnemyMods.Items.Tier4
         public override void SetDefaults()
         {
 
-            item.damage = 40;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 40;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 50000;
-            item.rare = 6;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
-            item.shootSpeed = 0f;
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 50000;
+            Item.rare = 6;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
+            Item.shootSpeed = 0f;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Shattershard Ring");
-      Tooltip.SetDefault("Summons a flurry of polar fragments. Two charges.");
+      // DisplayName.SetDefault("Shattershard Ring");
+      // Tooltip.SetDefault("Summons a flurry of polar fragments. Two charges.");
     }
 
         public override bool CanUseItem(Player player)
         {
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (play.charges[10] <= 0)
             {
                 return false;
             }
             else return true;
         }
-        public override bool UseItem(Player player)
+        public override bool? UseItem(Player player)/* tModPorter Suggestion: Return null instead of false */
         {
-            int p = Projectile.NewProjectile(player.Center.X, player.Center.Y - 50, 0, 0, mod.ProjectileType("ShattershardSpawner"), item.damage, item.knockBack, item.owner);
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            int p = Projectile.NewProjectile(player.Center.X, player.Center.Y - 50, 0, 0, Mod.Find<ModProjectile>("ShattershardSpawner").Type, Item.damage, Item.knockBack, Item.playerIndexTheItemIsReservedFor);
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             play.charges[10]--;
             if (play.cooldowns[10] == -1)
             {
@@ -54,11 +54,10 @@ namespace EnemyMods.Items.Tier4
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("IceShardRing"), 1);
-            recipe.AddIngredient(mod.ItemType("EmeraldTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("IceShardRing").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("EmeraldTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

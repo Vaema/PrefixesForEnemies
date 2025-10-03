@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,81 +12,80 @@ namespace EnemyMods.Items.Tier2
         public override void SetDefaults()
         {
 
-            item.damage = 23;
-            item.melee = true;
-            item.width = 48;
-            item.height = 48;
-            item.noUseGraphic = true;
-            item.noMelee = true;
+            Item.damage = 23;
+            Item.DamageType = DamageClass.Melee/* tModPorter Suggestion: Consider MeleeNoSpeed for no attack speed scaling */;
+            Item.width = 48;
+            Item.height = 48;
+            Item.noUseGraphic = true;
+            Item.noMelee = true;
 
 
-            item.useTime = 25;
-            item.useAnimation = 25;
-            item.useStyle = 5;
-            item.useTurn = true;
-            item.knockBack = 2;
-            item.value = 20000;
-            item.rare = 3;
-            item.UseSound = SoundID.Item1;
-            item.shoot = mod.ProjectileType("BlazingEstoc");
-            item.scale = 1.1f;
-            item.shootSpeed = 5f;
+            Item.useTime = 25;
+            Item.useAnimation = 25;
+            Item.useStyle = 5;
+            Item.useTurn = true;
+            Item.knockBack = 2;
+            Item.value = 20000;
+            Item.rare = 3;
+            Item.UseSound = SoundID.Item1;
+            Item.shoot = Mod.Find<ModProjectile>("BlazingEstoc").Type;
+            Item.scale = 1.1f;
+            Item.shootSpeed = 5f;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Blazing Estoc");
-      Tooltip.SetDefault("Right-click to counter.\nCounterattacks spew fire");
+      // DisplayName.SetDefault("Blazing Estoc");
+      // Tooltip.SetDefault("Right-click to counter.\nCounterattacks spew fire");
     }
 
         public override bool AltFunctionUse(Player player)
         {
-            if (player.FindBuffIndex(mod.BuffType("CounterCooldown")) == -1)
+            if (player.FindBuffIndex(Mod.Find<ModBuff>("CounterCooldown").Type) == -1)
             {
                 return true;
             }
             return false;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
             if (player.altFunctionUse == 2)
             {
-                MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+                MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
                 int bonus = modPlayer.increasedCounterLength ? 15 : 5;
-                player.AddBuff(mod.BuffType("CounterStanceEstoc"), item.useAnimation + bonus);
-                player.AddBuff(mod.BuffType("CounterCooldown"), 360);
+                player.AddBuff(Mod.Find<ModBuff>("CounterStanceEstoc").Type, Item.useAnimation + bonus);
+                player.AddBuff(Mod.Find<ModBuff>("CounterCooldown").Type, 360);
                 return false;
             }
-            if (player.FindBuffIndex(mod.BuffType("Counter")) >= 0)
+            if (player.FindBuffIndex(Mod.Find<ModBuff>("Counter").Type) >= 0)
             {
                 int p = Projectile.NewProjectile(position.X, position.Y, speedX*1.5f, speedY*1.5f, 376, damage*2, knockBack*2, player.whoAmI);
-                MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+                MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
                 if (modPlayer.counterPlus)
                 {
                     Main.projectile[p].damage = (int)(Main.projectile[p].damage * 1.2);
                 }
-                player.DelBuff(player.FindBuffIndex(mod.BuffType("Counter")));
+                player.DelBuff(player.FindBuffIndex(Mod.Find<ModBuff>("Counter").Type));
             }
             return true;
         }
-        public override void UseStyle(Player player)
+        public override void UseStyle(Player player, Rectangle heldItemFrame)
         {
             if (player.altFunctionUse == 2)
             {
-                item.noUseGraphic = false;
+                Item.noUseGraphic = false;
             }
             else
             {
-                item.noUseGraphic = true;
+                Item.noUseGraphic = true;
             }
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("TopazTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("TopazTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

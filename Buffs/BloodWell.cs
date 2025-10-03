@@ -6,17 +6,17 @@ namespace EnemyMods.Buffs
 {
     public class BloodWell : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Well");
-            Description.SetDefault("");
+            // DisplayName.SetDefault("Blood Well");
+            // Description.SetDefault("");
             Main.buffNoSave[Type] = true;
         }
 
         public override void Update(Player player, ref int buffIndex)
         {
-            MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
-            if (player.ownedProjectileCounts[mod.ProjectileType("BloodWell")] > 0)
+            MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
+            if (player.ownedProjectileCounts[Mod.Find<ModProjectile>("BloodWell").Type] > 0)
             {
                 modPlayer.bloodWell = true;
             }

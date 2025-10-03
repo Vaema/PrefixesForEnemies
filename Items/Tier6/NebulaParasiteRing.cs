@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria.DataStructures;
+using Terraria.ModLoader;
 using Terraria;
 using Microsoft.Xna.Framework;
 using Terraria.ID;
@@ -10,34 +11,34 @@ namespace EnemyMods.Items.Tier6
         public override void SetDefaults()
         {
 
-            item.damage = 1;
-            item.magic = true;
-            item.width = 10;
-            item.height = 10;
+            Item.damage = 1;
+            Item.DamageType = DamageClass.Magic;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.useTime = 60;
-            item.useAnimation = 60;
-            item.useStyle = 5;
-            item.noMelee = true;
-            item.knockBack = 1;
-            item.value = 100000;
-            item.rare = 10;
-            item.UseSound = SoundID.Item43;//change
-            item.autoReuse = false;
-            item.shootSpeed = 8f;
-            item.shoot = mod.ProjectileType("NebulaParasite");
+            Item.useTime = 60;
+            Item.useAnimation = 60;
+            Item.useStyle = 5;
+            Item.noMelee = true;
+            Item.knockBack = 1;
+            Item.value = 100000;
+            Item.rare = 10;
+            Item.UseSound = SoundID.Item43;//change
+            Item.autoReuse = false;
+            Item.shootSpeed = 8f;
+            Item.shoot = Mod.Find<ModProjectile>("NebulaParasite").Type;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Nebula Parasite");
-      Tooltip.SetDefault("Fires a parasite that damages enemies from within. One charge.");
+      // DisplayName.SetDefault("Nebula Parasite");
+      // Tooltip.SetDefault("Fires a parasite that damages enemies from within. One charge.");
     }
 
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            int p = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, item.damage, item.knockBack, item.owner);
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            int p = Projectile.NewProjectile(position.X, position.Y, speedX, speedY, type, Item.damage, Item.knockBack, Item.playerIndexTheItemIsReservedFor);
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             play.charges[16]--;
             if (play.cooldowns[16] == -1)
             {
@@ -47,7 +48,7 @@ namespace EnemyMods.Items.Tier6
         }
         public override bool CanUseItem(Player player)
         {
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (play.charges[16] <= 0)
             {
                 return false;
@@ -56,11 +57,10 @@ namespace EnemyMods.Items.Tier6
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("AmberTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("AmberTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

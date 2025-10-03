@@ -8,26 +8,26 @@ namespace EnemyMods.Projectiles.BloodMagic
     {
         public override void SetDefaults()
         {
-            projectile.width = 20;
-            projectile.height = 20;
-            projectile.timeLeft = 120;
-            projectile.maxPenetrate = 100;
-            projectile.penetrate = 100;
-            projectile.hostile = false;
-            projectile.magic = true;
-            projectile.scale = 1f;
-            projectile.aiStyle = 0;
-            projectile.friendly = true;
-            projectile.tileCollide = true;
-            projectile.alpha = 220;
+            Projectile.width = 20;
+            Projectile.height = 20;
+            Projectile.timeLeft = 120;
+            Projectile.maxPenetrate = 100;
+            Projectile.penetrate = 100;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.scale = 1f;
+            Projectile.aiStyle = 0;
+            Projectile.friendly = true;
+            Projectile.tileCollide = true;
+            Projectile.alpha = 220;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Blood Mist");
+            // DisplayName.SetDefault("Blood Mist");
         }
         public override bool OnTileCollide(Vector2 oldVelocity)
         {
-            projectile.velocity = Vector2.Zero;
+            Projectile.velocity = Vector2.Zero;
             return false;
         }
         public override void AI()
@@ -36,19 +36,19 @@ namespace EnemyMods.Projectiles.BloodMagic
             {
                 for (int i = 0; i < 2; i++)
                 {
-                    int dust = Dust.NewDust(projectile.position, projectile.width, projectile.height, 5, 0, 0, 100, default(Color), 1f);
-                    Main.dust[dust].fadeIn = 0.7f + projectile.timeLeft / 800f;
+                    int dust = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 5, 0, 0, 100, default(Color), 1f);
+                    Main.dust[dust].fadeIn = 0.7f + Projectile.timeLeft / 800f;
                     Main.dust[dust].noGravity = true;
                 }
-                int d = Dust.NewDust(projectile.position, projectile.width, projectile.height, 60, 0, 0, 100, default(Color), 0.5f);
-                Main.dust[d].fadeIn = 0.7f + projectile.timeLeft / 800f;
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 60, 0, 0, 100, default(Color), 0.5f);
+                Main.dust[d].fadeIn = 0.7f + Projectile.timeLeft / 800f;
                 Main.dust[d].noGravity = true;
             }
-            projectile.velocity *= .98f;
+            Projectile.velocity *= .98f;
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
-            target.AddBuff(mod.BuffType("Bloodied"), 180);
+            target.AddBuff(Mod.Find<ModBuff>("Bloodied").Type, 180);
         }
     }
 }

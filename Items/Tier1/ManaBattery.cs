@@ -12,18 +12,18 @@ namespace EnemyMods.Items.Tier1
         public override void SetDefaults()
         {
 
-            item.accessory = true;
-            item.width = 10;
-            item.height = 10;
-            item.rare = 2;
+            Item.accessory = true;
+            Item.width = 10;
+            Item.height = 10;
+            Item.rare = 2;
 
-            item.value = 5000;
+            Item.value = 5000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Mana Battery");
-      Tooltip.SetDefault("Gives a burst of mana when low. 30 second cooldown.");
+      // DisplayName.SetDefault("Mana Battery");
+      // Tooltip.SetDefault("Gives a burst of mana when low. 30 second cooldown.");
     }
 
         public override void UpdateEquip(Player player)
@@ -42,11 +42,10 @@ namespace EnemyMods.Items.Tier1
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("AmethystTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("AmethystTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

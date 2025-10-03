@@ -10,56 +10,56 @@ namespace EnemyMods.Projectiles.Duelist
     {
         public override void SetDefaults()
         {
-            projectile.width = 56;
-            projectile.height = 56;
-            projectile.timeLeft = 60;
-            projectile.tileCollide = false;
-            projectile.maxPenetrate = -1;
-            projectile.penetrate = -1;
-            projectile.ownerHitCheck = true;
-            projectile.hide = true;
-            projectile.melee = true;
-            projectile.scale = 1f;
-            projectile.aiStyle = 19;
-            projectile.friendly = true;
+            Projectile.width = 56;
+            Projectile.height = 56;
+            Projectile.timeLeft = 60;
+            Projectile.tileCollide = false;
+            Projectile.maxPenetrate = -1;
+            Projectile.penetrate = -1;
+            Projectile.ownerHitCheck = true;
+            Projectile.hide = true;
+            Projectile.DamageType = DamageClass.Melee;
+            Projectile.scale = 1f;
+            Projectile.aiStyle = 19;
+            Projectile.friendly = true;
         }
         public override void AI()
         {
-            Main.player[projectile.owner].direction = projectile.direction;
-            Main.player[projectile.owner].heldProj = projectile.whoAmI;
-            Main.player[projectile.owner].itemTime = Main.player[projectile.owner].itemAnimation;
-            projectile.position.X = Main.player[projectile.owner].position.X + (float)(Main.player[projectile.owner].width / 2) - (float)(projectile.width / 2);
-            projectile.position.Y = Main.player[projectile.owner].position.Y + (float)(Main.player[projectile.owner].height / 2) - (float)(projectile.height / 2);
-            projectile.position += projectile.velocity * projectile.ai[0] + (projectile.velocity / 5) * projectile.width / 5f; if (projectile.ai[0] == 0f)
+            Main.player[Projectile.owner].direction = Projectile.direction;
+            Main.player[Projectile.owner].heldProj = Projectile.whoAmI;
+            Main.player[Projectile.owner].itemTime = Main.player[Projectile.owner].itemAnimation;
+            Projectile.position.X = Main.player[Projectile.owner].position.X + (float)(Main.player[Projectile.owner].width / 2) - (float)(Projectile.width / 2);
+            Projectile.position.Y = Main.player[Projectile.owner].position.Y + (float)(Main.player[Projectile.owner].height / 2) - (float)(Projectile.height / 2);
+            Projectile.position += Projectile.velocity * Projectile.ai[0] + (Projectile.velocity / 5) * Projectile.width / 5f; if (Projectile.ai[0] == 0f)
             {
-                projectile.ai[0] = 3f;
-                projectile.netUpdate = true;
+                Projectile.ai[0] = 3f;
+                Projectile.netUpdate = true;
             }
-            if (projectile.timeLeft % 2 == 0)
+            if (Projectile.timeLeft % 2 == 0)
             {
-                int d = Dust.NewDust(projectile.position, projectile.width, projectile.height, 75);
+                int d = Dust.NewDust(Projectile.position, Projectile.width, Projectile.height, 75);
             }
-            if (Main.player[projectile.owner].itemAnimation < Main.player[projectile.owner].itemAnimationMax / 3)
+            if (Main.player[Projectile.owner].itemAnimation < Main.player[Projectile.owner].itemAnimationMax / 3)
             {
-                projectile.ai[0] -= .68f;
+                Projectile.ai[0] -= .68f;
             }
             else
             {
-                projectile.ai[0] += 0.68f;
+                Projectile.ai[0] += 0.68f;
             }
 
-            if (Main.player[projectile.owner].itemAnimation == 0)
+            if (Main.player[Projectile.owner].itemAnimation == 0)
             {
-                projectile.Kill();
+                Projectile.Kill();
             }
 
-            projectile.rotation = (float)Math.Atan2((double)projectile.velocity.Y, (double)projectile.velocity.X) + 2.355f;
-            if (projectile.spriteDirection == -1)
+            Projectile.rotation = (float)Math.Atan2((double)Projectile.velocity.Y, (double)Projectile.velocity.X) + 2.355f;
+            if (Projectile.spriteDirection == -1)
             {
-                projectile.rotation -= 1.57f;
+                Projectile.rotation -= 1.57f;
             }
         }
-        public override void OnHitNPC(NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPC(NPC target, NPC.HitInfo hit, int damageDone)
         {
             target.AddBuff(BuffID.CursedInferno, 180);
         }

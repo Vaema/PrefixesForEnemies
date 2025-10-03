@@ -5,9 +5,9 @@ namespace EnemyMods.Buffs
 {
     public class GunbladeRanged3 : ModBuff
     {
-        public override void SetDefaults()
+        public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Gunblade Ranged Bonus");
+            // DisplayName.SetDefault("Gunblade Ranged Bonus");
             Main.buffNoSave[Type] = true;
         }
         public override void Update(Player player, ref int buffIndex)
@@ -20,10 +20,10 @@ namespace EnemyMods.Buffs
                 stacks = 5;
                 player.buffTime[buffIndex] = 600;
             }
-            player.rangedDamage += .04f * stacks;
+            player.GetDamage(DamageClass.Ranged) += .04f * stacks;
             if (flag)
             {
-                MPlayer modPlayer = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+                MPlayer modPlayer = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
                 modPlayer.gunbladeRangedDebuff = 3;
             }
         }

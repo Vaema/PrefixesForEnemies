@@ -11,25 +11,25 @@ namespace EnemyMods.Items.Tier1
         {
 
 
-            item.maxStack = 30;
-            item.value = 1000;
-            item.rare = 2;
-            item.useAnimation = 17;
-            item.useTime = 17;
-            item.useStyle = 2;
-            item.consumable = true;
-            item.useTurn = true;
-            item.width = 14;
-            item.height = 24;
-            item.UseSound = SoundID.Item3;
-            item.buffType = mod.BuffType("MysteriousPhilter");
-            item.buffTime = 36000;
+            Item.maxStack = 30;
+            Item.value = 1000;
+            Item.rare = 2;
+            Item.useAnimation = 17;
+            Item.useTime = 17;
+            Item.useStyle = 2;
+            Item.consumable = true;
+            Item.useTurn = true;
+            Item.width = 14;
+            Item.height = 24;
+            Item.UseSound = SoundID.Item3;
+            Item.buffType = Mod.Find<ModBuff>("MysteriousPhilter").Type;
+            Item.buffTime = 36000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Mysterious Philter");
-      Tooltip.SetDefault("Grants a random buff each minute");
+      // DisplayName.SetDefault("Mysterious Philter");
+      // Tooltip.SetDefault("Grants a random buff each minute");
     }
 
     }

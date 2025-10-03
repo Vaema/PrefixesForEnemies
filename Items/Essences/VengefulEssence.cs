@@ -9,23 +9,23 @@ namespace EnemyMods.Items.Essences
         public override void SetDefaults()
         {
 
-            item.width = 10;
-            item.height = 10;
+            Item.width = 10;
+            Item.height = 10;
 
 
-            item.value = 10000;
-            item.rare = 3;
+            Item.value = 10000;
+            Item.rare = 3;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Vengeful Essence");
-      Tooltip.SetDefault("Simply holding this grants you power\nDeal 20% more damage when below 20% life");
+      // DisplayName.SetDefault("Vengeful Essence");
+      // Tooltip.SetDefault("Simply holding this grants you power\nDeal 20% more damage when below 20% life");
     }
 
         public override void UpdateInventory(Player player)
         {
-            MPlayer mplayer = (MPlayer)(player.GetModPlayer(mod, "MPlayer"));
+            MPlayer mplayer = (MPlayer)(player.GetModPlayer(Mod, "MPlayer"));
             mplayer.vengeful = true;
         }
     }

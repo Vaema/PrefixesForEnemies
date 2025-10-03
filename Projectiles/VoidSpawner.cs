@@ -9,17 +9,17 @@ namespace EnemyMods.Projectiles
     {
         public override void SetDefaults()
         {
-            projectile.width = 1;
-            projectile.height = 1;
-            projectile.timeLeft = 90;
-            projectile.penetrate = -1;
-            projectile.hostile = false;
-            projectile.magic = true;
-            projectile.tileCollide = false;
+            Projectile.width = 1;
+            Projectile.height = 1;
+            Projectile.timeLeft = 90;
+            Projectile.penetrate = -1;
+            Projectile.hostile = false;
+            Projectile.DamageType = DamageClass.Magic;
+            Projectile.tileCollide = false;
         }
         public override void SetStaticDefaults()
         {
-            DisplayName.SetDefault("Void Breach");
+            // DisplayName.SetDefault("Void Breach");
         }
 
         public override bool? CanHitNPC(NPC target)
@@ -29,24 +29,24 @@ namespace EnemyMods.Projectiles
 
         public override void AI()
         {
-            projectile.ai[1] += 1f;
-            if (projectile.ai[1] >= 4f)
+            Projectile.ai[1] += 1f;
+            if (Projectile.ai[1] >= 4f)
             {
-                projectile.ai[1] = 0f;
+                Projectile.ai[1] = 0f;
                 for (int i = 0; i < 3; i++)
                 {
-                    int d = Dust.NewDust(new Vector2(projectile.position.X + Main.rand.Next(-20, 21), projectile.position.Y + Main.rand.Next(-20, 21)), projectile.width, projectile.height, mod.DustType("VoidDust"), (Main.rand.Next(-15, 16)) * .3f, (Main.rand.Next(-15, 16)) * .3f);
+                    int d = Dust.NewDust(new Vector2(Projectile.position.X + Main.rand.Next(-20, 21), Projectile.position.Y + Main.rand.Next(-20, 21)), Projectile.width, Projectile.height, Mod.Find<ModDust>("VoidDust").Type, (Main.rand.Next(-15, 16)) * .3f, (Main.rand.Next(-15, 16)) * .3f);
                     Main.dust[d].noGravity = false;
                 }
             }
         }
-        public override void Kill(int timeLeft)
+        public override void OnKill(int timeLeft)
         {
             //find a sound to play here
-            Vector2 velocity = new Vector2(Main.player[(int)projectile.ai[0]].Center.X - projectile.position.X, Main.player[(int)projectile.ai[0]].Center.Y - projectile.position.Y);
+            Vector2 velocity = new Vector2(Main.player[(int)Projectile.ai[0]].Center.X - Projectile.position.X, Main.player[(int)Projectile.ai[0]].Center.Y - Projectile.position.Y);
             velocity.Normalize();
             velocity *= 3.4f;
-            Projectile.NewProjectile(projectile.position, velocity, mod.ProjectileType("VoidTendril"), projectile.damage, 2);
+            Projectile.NewProjectile(Projectile.position, velocity, Mod.Find<ModProjectile>("VoidTendril").Type, Projectile.damage, 2);
         }
     }
 }

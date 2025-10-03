@@ -1,4 +1,5 @@
-﻿using Terraria.ModLoader;
+﻿using Terraria;
+using Terraria.ModLoader;
 using Terraria.ID;
 
 namespace EnemyMods.Items.Tier6
@@ -8,33 +9,32 @@ namespace EnemyMods.Items.Tier6
         public override void SetDefaults()
             {
 
-                item.damage = 28;
-                item.ranged = true;
-                item.width = 14;
-                item.height = 48;
-                item.maxStack = 999;
+                Item.damage = 28;
+                Item.DamageType = DamageClass.Ranged;
+                Item.width = 14;
+                Item.height = 48;
+                Item.maxStack = 999;
 
-                item.consumable = true;
-                item.knockBack = 3f;
-                item.value = 2000;
-                item.rare = 10;
-                item.shoot = mod.ProjectileType("VortexGreatarrow");
-                item.shootSpeed = -2f;
-                item.ammo = AmmoID.Arrow;
+                Item.consumable = true;
+                Item.knockBack = 3f;
+                Item.value = 2000;
+                Item.rare = 10;
+                Item.shoot = Mod.Find<ModProjectile>("VortexGreatarrow").Type;
+                Item.shootSpeed = -2f;
+                Item.ammo = AmmoID.Arrow;
             }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Vortex Greatarrow");
-      Tooltip.SetDefault("Too heavy for normal bows to use effectively");
+      // DisplayName.SetDefault("Vortex Greatarrow");
+      // Tooltip.SetDefault("Too heavy for normal bows to use effectively");
     }
 
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("AmberTicket"));
-            recipe.SetResult(this, 100);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe(100);
+            recipe.AddIngredient(Mod.Find<ModItem>("AmberTicket").Type);
+            recipe.Register();
         }
     }
 }

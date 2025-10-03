@@ -9,18 +9,18 @@ namespace EnemyMods.Items.Tier4
         public override void SetDefaults()
         {
 
-            item.accessory = true;
-            item.rare = 6;
-            item.width = 10;
-            item.height = 10;
+            Item.accessory = true;
+            Item.rare = 6;
+            Item.width = 10;
+            Item.height = 10;
 
-            item.value = 50000;
+            Item.value = 50000;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Charge Bangle");
-      Tooltip.SetDefault("Adds an extra charge to rings with 2 or more base charges");
+      // DisplayName.SetDefault("Charge Bangle");
+      // Tooltip.SetDefault("Adds an extra charge to rings with 2 or more base charges");
     }
 
         public override void UpdateEquip(Player player)
@@ -29,11 +29,10 @@ namespace EnemyMods.Items.Tier4
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("ChoiceToken"), 1);
-            recipe.AddIngredient(mod.ItemType("EmeraldTicket"), 3);
-            recipe.SetResult(this);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe();
+            recipe.AddIngredient(Mod.Find<ModItem>("ChoiceToken").Type, 1);
+            recipe.AddIngredient(Mod.Find<ModItem>("EmeraldTicket").Type, 3);
+            recipe.Register();
         }
     }
 }

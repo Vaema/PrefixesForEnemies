@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.Audio;
+using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 
@@ -11,42 +13,42 @@ namespace EnemyMods.Items.Tier5
         public override void SetDefaults()
         {
 
-            item.damage = 83;
-            item.thrown = true;
-            item.noMelee = true;
-            item.noUseGraphic = true;
-            item.width = 28;
-            item.height = 28;
+            Item.damage = 83;
+            Item.DamageType = DamageClass.Throwing;
+            Item.noMelee = true;
+            Item.noUseGraphic = true;
+            Item.width = 28;
+            Item.height = 28;
 
-            item.useTime = 12;
-            item.useAnimation = 12;
-            item.useStyle = 3;
-            item.knockBack = .5f;
-            item.value = 150;
-            item.rare = 8;
-            item.UseSound = SoundID.Item7;
-            item.consumable = true;
-            item.shoot = mod.ProjectileType("TeravoltNeedle");
-            item.shootSpeed = 12f;
-            item.maxStack = 999;
+            Item.useTime = 12;
+            Item.useAnimation = 12;
+            Item.useStyle = 3;
+            Item.knockBack = .5f;
+            Item.value = 150;
+            Item.rare = 8;
+            Item.UseSound = SoundID.Item7;
+            Item.consumable = true;
+            Item.shoot = Mod.Find<ModProjectile>("TeravoltNeedle").Type;
+            Item.shootSpeed = 12f;
+            Item.maxStack = 999;
         }
 
     public override void SetStaticDefaults()
     {
-      DisplayName.SetDefault("Teravolt Needle");
-      Tooltip.SetDefault("Right-click to prepare multiple needles");
+      // DisplayName.SetDefault("Teravolt Needle");
+      // Tooltip.SetDefault("Right-click to prepare multiple needles");
     }
 
         public override bool AltFunctionUse(Player player)
         {
             return true;
         }
-        public override bool Shoot(Player player, ref Vector2 position, ref float speedX, ref float speedY, ref int type, ref int damage, ref float knockBack)
+        public override bool Shoot(Player player, EntitySource_ItemUse_WithAmmo source, Vector2 position, Vector2 velocity, int type, int damage, float knockback)
         {
-            GItem info = item.GetGlobalItem<GItem>();
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
-            item.useTime = 12;
-            item.useAnimation = 12;
+            GItem info = Item.GetGlobalItem<GItem>();
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
+            Item.useTime = 12;
+            Item.useAnimation = 12;
             if (info.numNeedles <= 1 && player.altFunctionUse != 2)
             {
                 return true;
@@ -59,13 +61,13 @@ namespace EnemyMods.Items.Tier5
                 player.itemAnimation = info.numNeedles * 3;
                 for (int i = 0; i < info.numNeedles - 1; i++)
                 {
-                    if ((player.thrownCost33 && Main.rand.Next(100) < 33) || (player.thrownCost50 && Main.rand.Next(2) == 0))
+                    if ((player.ThrownCost33 && Main.rand.Next(100) < 33) || (player.ThrownCost50 && Main.rand.Next(2) == 0))
                     {
 
                     }
                     else
                     {
-                        item.stack--;
+                        Item.stack--;
                     }
                 }
                 info.numNeedles = 0;
@@ -75,7 +77,7 @@ namespace EnemyMods.Items.Tier5
         }
         public override bool ConsumeItem(Player player)
         {
-            GItem info = item.GetGlobalItem<GItem>();
+            GItem info = Item.GetGlobalItem<GItem>();
             if (player.altFunctionUse == 2 && info.numNeedles == 0)
             {
                 return false;
@@ -84,54 +86,53 @@ namespace EnemyMods.Items.Tier5
         }
         public override bool CanUseItem(Player player)
         {
-            GItem info = item.GetGlobalItem<GItem>();
-            MPlayer play = (MPlayer)player.GetModPlayer(mod, "MPlayer");
+            GItem info = Item.GetGlobalItem<GItem>();
+            MPlayer play = (MPlayer)player.GetModPlayer(Mod, "MPlayer");
             if (player.altFunctionUse == 2)
             {
-                item.UseSound = SoundID.Item32;
+                Item.UseSound = SoundID.Item32;
                 if (info.timeToNeedle == 0)
                 {
-                    info.timeToNeedle = item.useTime;
+                    info.timeToNeedle = Item.useTime;
                 }
-                if (info.numNeedles < Math.Min(6, item.stack))
+                if (info.numNeedles < Math.Min(6, Item.stack))
                 {
                     info.timeToNeedle--;
                 }
-                if (info.timeToNeedle == 1 && info.numNeedles < Math.Min(6, item.stack))
+                if (info.timeToNeedle == 1 && info.numNeedles < Math.Min(6, Item.stack))
                 {
                     info.numNeedles++;
-                    if (info.numNeedles != Math.Min(6, item.stack))
+                    if (info.numNeedles != Math.Min(6, Item.stack))
                     {
-                        Main.PlaySound(2, (int)player.position.X, (int)player.position.Y, 17, .3f);
+                        SoundEngine.PlaySound(SoundID.Item17.WithVolumeScale(.3f), player.position);
                     }
                 }
-                if (info.numNeedles == Math.Min(6, item.stack) && info.timeToNeedle == 1)
+                if (info.numNeedles == Math.Min(6, Item.stack) && info.timeToNeedle == 1)
                 {
-                    Main.PlaySound(22, (int)player.position.X, (int)player.position.Y, 1, .3f);
-                    info.timeToNeedle = item.useTime;
-                    item.useTime = 18;
-                    item.useAnimation = 18;
+                    SoundEngine.PlaySound(SoundID.Unlock.WithVolumeScale(.3f), player.position);
+                    info.timeToNeedle = Item.useTime;
+                    Item.useTime = 18;
+                    Item.useAnimation = 18;
                 }
                 return false;
             }
-            item.consumable = true;
-            item.UseSound = SoundID.Item7;
+            Item.consumable = true;
+            Item.UseSound = SoundID.Item7;
             return base.CanUseItem(player);
         }
         public override void UpdateInventory(Player player)
         {
-            if (player.inventory[player.selectedItem] != item)
+            if (player.inventory[player.selectedItem] != Item)
             {
-                GItem info = item.GetGlobalItem<GItem>();
+                GItem info = Item.GetGlobalItem<GItem>();
                 info.numNeedles = 0;
             }
         }
         public override void AddRecipes()
         {
-            ModRecipe recipe = new ModRecipe(mod);
-            recipe.AddIngredient(mod.ItemType("RubyTicket"), 1);
-            recipe.SetResult(this, 200);
-            recipe.AddRecipe();
+            Recipe recipe = CreateRecipe(200);
+            recipe.AddIngredient(Mod.Find<ModItem>("RubyTicket").Type, 1);
+            recipe.Register();
         }
     }
 }

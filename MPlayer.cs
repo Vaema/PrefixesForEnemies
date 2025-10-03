@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using System;
 using Terraria;
+using Terraria.Audio;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.DataStructures;
@@ -93,7 +94,7 @@ namespace EnemyMods
             //potions
             duelistDraught = false;
             tenacity = false;
-            tenacityLifeCount = player.lifeRegenTime;
+            tenacityLifeCount = Player.lifeRegenTime;
             shockTonic = false;
             flightElixir = false;
             earthenDraught = false;
@@ -106,19 +107,19 @@ namespace EnemyMods
         public override void PreUpdate()
         {
         }
-        public override void PostHurt(bool pvp, bool quiet, double damage, int hitDirection, bool crit)
+        public override void PostHurt(Player.HurtInfo info)
         {
-            int b = player.FindBuffIndex(mod.BuffType("BloodWell"));
+            int b = Player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
             if(b >= 0)
             {
-                player.buffTime[b] += (int)(damage * 30);
+                Player.buffTime[b] += (int)(damage * 30);
             }
             if (tenacity)
             {
-                player.lifeRegenTime = tenacityLifeCount - 300;
-                if (player.lifeRegenTime < 0)
+                Player.lifeRegenTime = tenacityLifeCount - 300;
+                if (Player.lifeRegenTime < 0)
                 {
-                    player.lifeRegenTime = 0;
+                    Player.lifeRegenTime = 0;
                 }
             }
             if (steelElixir)
@@ -137,8 +138,8 @@ namespace EnemyMods
         {
             if (undying)
             {
-                player.statLife = 1;
-                CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y - 50, player.width, player.height), new Color(255, 100, 100, 255), "UNDYING");
+                Player.statLife = 1;
+                CombatText.NewText(new Rectangle((int)Player.position.X, (int)Player.position.Y - 50, Player.width, Player.height), new Color(255, 100, 100, 255), "UNDYING");
                 return false;
             }
             return true;
@@ -156,27 +157,27 @@ namespace EnemyMods
             {
                 reconstructionTime = 0;
             }
-            for (int k = 3; k < 8 + player.extraAccessorySlots; k++)
+            for (int k = 3; k < 8 + Player.extraAccessorySlots; k++)
             {
-                if (player.armor[k].type == mod.ItemType("ChargeBangle"))
+                if (Player.armor[k].type == Mod.Find<ModItem>("ChargeBangle").Type)
                 {
                     chargeBangle = true;
                 }
-                if (player.armor[k].type == mod.ItemType("MoonIdol"))
+                if (Player.armor[k].type == Mod.Find<ModItem>("MoonIdol").Type)
                 {
                     moonIdol = true;
                 }
-                if (player.armor[k].type == mod.ItemType("BloodMagePact"))
+                if (Player.armor[k].type == Mod.Find<ModItem>("BloodMagePact").Type)
                 {
                     killWell = false;
                 }
             }
             if (killWell)
             {
-                int p = player.FindBuffIndex(mod.BuffType("BloodWell"));
+                int p = Player.FindBuffIndex(Mod.Find<ModBuff>("BloodWell").Type);
                 if(p >= 0)
                 {
-                    player.DelBuff(p);
+                    Player.DelBuff(p);
                     p--;
                 }
             }
@@ -185,36 +186,36 @@ namespace EnemyMods
         {
             if(battleDance && battleDanceDamage >= 20)
             {
-                player.AddBuff(BuffID.Hunter, 2);
+                Player.AddBuff(BuffID.Hunter, 2);
             }
         }
         public override void PostUpdateEquips()
         {
-            player.statDefense += steelDefense;
-            player.meleeDamage += (battleDanceDamage / 100f);
-            player.rangedDamage += (battleDanceDamage / 100f);
-            player.magicDamage += (battleDanceDamage / 100f);
-            player.thrownDamage += (battleDanceDamage / 100f);
-            player.minionDamage += (battleDanceDamage / 100f);
-            if (player.FindBuffIndex(mod.BuffType("BloodArmor")) == -1)
+            Player.statDefense += steelDefense;
+            Player.GetDamage(DamageClass.Melee) += (battleDanceDamage / 100f);
+            Player.GetDamage(DamageClass.Ranged) += (battleDanceDamage / 100f);
+            Player.GetDamage(DamageClass.Magic) += (battleDanceDamage / 100f);
+            Player.GetDamage(DamageClass.Throwing) += (battleDanceDamage / 100f);
+            Player.GetDamage(DamageClass.Summon) += (battleDanceDamage / 100f);
+            if (Player.FindBuffIndex(Mod.Find<ModBuff>("BloodArmor").Type) == -1)
             {
                 bloodArmor = 0;
             }
             if (bloodArmor > 0)
             {
-                player.endurance += .1f;
-                player.statDefense += bloodArmor;
+                Player.endurance += .1f;
+                Player.statDefense += bloodArmor;
             }
             //throw charged needles
             if(needleTime > 0)
             {
                 if (needleTime % 3 == 0)
                 {
-                    Vector2 vel = Main.MouseWorld - player.Center;
+                    Vector2 vel = Main.MouseWorld - Player.Center;
                     vel.Normalize();
-                    vel *= 12 * player.thrownVelocity;
-                    int p = Projectile.NewProjectile(player.Center.X, player.Center.Y, vel.X, vel.Y, typeNeedles, needleDamage, .5f, player.whoAmI);
-                    Main.PlaySound(2, player.position, 1);
+                    vel *= 12 * Player.ThrownVelocity;
+                    int p = Projectile.NewProjectile(Player.Center.X, Player.Center.Y, vel.X, vel.Y, typeNeedles, needleDamage, .5f, Player.whoAmI);
+                    SoundEngine.PlaySound(SoundID.Item1, Player.position);
                 }
                 needleTime--;
             }
@@ -245,9 +246,9 @@ namespace EnemyMods
                     if (!noText[i])
                     {
                         if(maxCharges[i]!=1)
-                            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y - 50, player.width, player.height), new Color(255, 255, 255, 255), chargeText[i] + " " + charges[i] + "/" + (maxCharges[i] + (chargeBangle ? 1 : 0)));
+                            CombatText.NewText(new Rectangle((int)Player.position.X, (int)Player.position.Y - 50, Player.width, Player.height), new Color(255, 255, 255, 255), chargeText[i] + " " + charges[i] + "/" + (maxCharges[i] + (chargeBangle ? 1 : 0)));
                         else
-                            CombatText.NewText(new Rectangle((int)player.position.X, (int)player.position.Y - 50, player.width, player.height), new Color(255, 255, 255, 255), chargeText[i] + " " + charges[i] + "/" + maxCharges[i]);
+                            CombatText.NewText(new Rectangle((int)Player.position.X, (int)Player.position.Y - 50, Player.width, Player.height), new Color(255, 255, 255, 255), chargeText[i] + " " + charges[i] + "/" + maxCharges[i]);
                     }
                     noText[i] = false;
                     if (charges[i] >= maxCharges[i] && (maxCharges[i] == 1 || charges[i] == maxCharges[i] + (chargeBangle ? 1 : 0)))
@@ -273,13 +274,13 @@ namespace EnemyMods
                 }
             }
         }
-        public override void ModifyHitNPC(Item item, NPC target, ref int damage, ref float knockback, ref bool crit)
+        public override void ModifyHitNPCWithItem(Item item, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Item, consider using ModifyHitNPC instead */
         {
             if (moonIdol && crit && Main.rand.Next(0, 5)==0)
             {
                 damage *= 2;
             }
-            if(gunbladeMeleeDebuff>0 && item.melee && crit)
+            if(gunbladeMeleeDebuff>0 && item.CountsAsClass(DamageClass.Melee) && crit)
             {
                 gNPC info = target.GetGlobalNPC<gNPC>();
                 info.gunbladeMeleeDebuff = gunbladeMeleeDebuff;
@@ -294,13 +295,13 @@ namespace EnemyMods
                 duelistTarget = target.whoAmI;
             }
         }
-        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref int damage, ref float knockback, ref bool crit, ref int hitDirection)
+        public override void ModifyHitNPCWithProj(Projectile proj, NPC target, ref NPC.HitModifiers modifiers)/* tModPorter If you don't need the Projectile, consider using ModifyHitNPC instead */
         {
             if (moonIdol && crit && Main.rand.Next(0, 5) == 0)
             {
                 damage *= 2;
             }
-            if (gunbladeRangedDebuff > 0 && proj.ranged && crit)
+            if (gunbladeRangedDebuff > 0 && proj.CountsAsClass(DamageClass.Ranged) && crit)
             {
                 gNPC info = target.GetGlobalNPC<gNPC>();
                 info.gunbladeRangedDebuff = gunbladeRangedDebuff;
@@ -315,7 +316,7 @@ namespace EnemyMods
                 duelistTarget = target.whoAmI;
             }
         }
-        public override void ModifyHitByNPC(NPC npc, ref int damage, ref bool crit)
+        public override void ModifyHitByNPC(NPC npc, ref Player.HurtModifiers modifiers)
         {
             if (duelistDraught)
             {
@@ -324,21 +325,21 @@ namespace EnemyMods
                     damage = (int)(damage * .9);
                 }
             }
-            if (player.FindBuffIndex(mod.BuffType("CounterStanceRapier")) >= 0)
+            if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceRapier").Type) >= 0)
             {
-                player.AddBuff(mod.BuffType("Counter"), 300);
+                Player.AddBuff(Mod.Find<ModBuff>("Counter").Type, 300);
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEstoc")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEstoc").Type) >= 0)
             {
-                player.AddBuff(mod.BuffType("Counter"), 300);
+                Player.AddBuff(Mod.Find<ModBuff>("Counter").Type, 300);
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEpee")) >= 0 || player.FindBuffIndex(mod.BuffType("CounterStanceEpee2")) >= 0 || player.FindBuffIndex(mod.BuffType("CounterStanceEpee3")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee").Type) >= 0 || Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee2").Type) >= 0 || Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee3").Type) >= 0)
             {
                 if(npc.aiStyle == 9)// this style behaves like a projectile, but can't be reflected, so we kill it instead
                 {
@@ -346,13 +347,13 @@ namespace EnemyMods
                     NetMessage.SendData(28, -1, -1, null, npc.whoAmI, 999, 0, 0, 0);
                 }
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceFoil")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil").Type) >= 0)
             {
-                int direction = (player.position.X >= npc.position.X) ? -1 : 1;
-                int dam = (int)(10 * player.meleeDamage * (Main.expertMode ? .7 : 1)) + damage;
+                int direction = (Player.position.X >= npc.position.X) ? -1 : 1;
+                int dam = (int)(10 * Player.GetDamage(DamageClass.Melee) * (Main.expertMode ? .7 : 1)) + damage;
                 dam = (int)(dam * Main.rand.Next(90, 111)/100.0);
                 if (counterPlus)
                 {
@@ -360,15 +361,15 @@ namespace EnemyMods
                 }
                 npc.StrikeNPC(dam, 10, direction, true);
                 NetMessage.SendData(28, -1, -1, null, npc.whoAmI, dam, 10, direction, 1);
-                player.addDPS(2 * dam);
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.addDPS(2 * dam);
+                Player.immune = true;
+                Player.immuneTime = 60;
                 damage = 0;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceFoil2")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil2").Type) >= 0)
             {
-                int direction = (player.position.X >= npc.position.X) ? -1 : 1;
-                int dam = (int)(52 * player.meleeDamage * (Main.expertMode ? .7 : 1)) + (damage*3)/2;
+                int direction = (Player.position.X >= npc.position.X) ? -1 : 1;
+                int dam = (int)(52 * Player.GetDamage(DamageClass.Melee) * (Main.expertMode ? .7 : 1)) + (damage*3)/2;
                 dam = (int)(dam * Main.rand.Next(90, 111) / 100.0);
                 if (counterPlus)
                 {
@@ -376,29 +377,29 @@ namespace EnemyMods
                 }
                 npc.StrikeNPC(dam, 10, direction, true);
                 NetMessage.SendData(28, -1, -1, null, npc.whoAmI, dam, 10, direction, 1);
-                player.addDPS(2 * dam);
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.addDPS(2 * dam);
+                Player.immune = true;
+                Player.immuneTime = 60;
                 damage = 0;
 
                 npc.AddBuff(BuffID.CursedInferno, 600);
                 for(int i=0; i<12; i++)
                 {
-                    int d = Dust.NewDust(player.position, 38, 38, 75);
+                    int d = Dust.NewDust(Player.position, 38, 38, 75);
                     Main.dust[d].velocity *= 3;
                     Main.dust[d].scale = 1.3f;
                 }
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceFoil3")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil3").Type) >= 0)
             {
-                int dam = (int)(80 * player.meleeDamage) + (int)(damage* 2.25 * (Main.expertMode ? .7 : 1));
+                int dam = (int)(80 * Player.GetDamage(DamageClass.Melee)) + (int)(damage* 2.25 * (Main.expertMode ? .7 : 1));
                 if (npc.boss || (npc.aiStyle == 6 && !npc.FullName.Contains("Head")))
                 {
                     dam = (int)(dam*1.6);//bonus damage to compensate for no stun
                 }
                 else
                 {
-                    npc.AddBuff(mod.BuffType("Stunned"), 180);
+                    npc.AddBuff(Mod.Find<ModBuff>("Stunned").Type, 180);
                 }
                 dam = (int)(dam * Main.rand.Next(90, 111) / 100.0);
                 if (counterPlus)
@@ -407,22 +408,22 @@ namespace EnemyMods
                 }
                 npc.StrikeNPC(dam, 10, 0, true);
                 NetMessage.SendData(28, -1, -1, null, npc.whoAmI, dam, 10, 0, 1);
-                player.addDPS(2 * dam);
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.addDPS(2 * dam);
+                Player.immune = true;
+                Player.immuneTime = 60;
                 damage = 0;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceFoil4")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil4").Type) >= 0)
             {
-                int direction = (player.position.X >= npc.position.X) ? -1 : 1;
-                int dam = (int)(140 * player.meleeDamage * (Main.expertMode ? .7f : 1)) + damage * 3;
+                int direction = (Player.position.X >= npc.position.X) ? -1 : 1;
+                int dam = (int)(140 * Player.GetDamage(DamageClass.Melee) * (Main.expertMode ? .7f : 1)) + damage * 3;
                 if (npc.boss || (npc.aiStyle == 6 && !npc.FullName.Contains("Head")))
                 {
                     dam = (int)(dam * 2);
                 }
                 else
                 {
-                    npc.AddBuff(mod.BuffType("Suspended"), 180);
+                    npc.AddBuff(Mod.Find<ModBuff>("Suspended").Type, 180);
                 }
                 dam = (int)(dam * Main.rand.Next(90, 111) / 100.0);
                 if (counterPlus)
@@ -431,148 +432,148 @@ namespace EnemyMods
                 }
                 npc.StrikeNPC(dam, 10, direction, true);
                 NetMessage.SendData(28, -1, -1, null, npc.whoAmI, dam, 10, direction, 1);
-                player.addDPS(2 * dam);
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.addDPS(2 * dam);
+                Player.immune = true;
+                Player.immuneTime = 60;
                 damage = 0;
             }
         }
-        public override void ModifyHitByProjectile(Projectile proj, ref int damage, ref bool crit)
+        public override void ModifyHitByProjectile(Projectile proj, ref Player.HurtModifiers modifiers)
         {
-            if (player.FindBuffIndex(mod.BuffType("CounterStanceRapier")) >= 0)
+            if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceRapier").Type) >= 0)
             {
-                player.AddBuff(mod.BuffType("Counter"), 600);
+                Player.AddBuff(Mod.Find<ModBuff>("Counter").Type, 600);
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEstoc")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEstoc").Type) >= 0)
             {
-                player.AddBuff(mod.BuffType("Counter"), 600);
+                Player.AddBuff(Mod.Find<ModBuff>("Counter").Type, 600);
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEpee")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee").Type) >= 0)
             {
                 //reflects projectile, generally makes it damage eneimes and ignore players
                 proj.velocity = -proj.velocity;
                 proj.friendly = true;
                 proj.hostile = false;
-                proj.damage = (int)((proj.damage+10) * 4 * player.meleeDamage);
+                proj.damage = (int)((proj.damage+10) * 4 * Player.GetDamage(DamageClass.Melee));
                 if (counterPlus)
                 {
                     proj.damage = (int)(proj.damage * 1.2);
                 }
                 damage = 0;
                 //leaves the player with very brief immunity so they can reflect further projectiles
-                player.immune = true;
-                player.immuneTime = 6;
+                Player.immune = true;
+                Player.immuneTime = 6;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEpee2")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee2").Type) >= 0)
             {
                 proj.velocity = -proj.velocity * 1.5f;
                 proj.friendly = true;
                 proj.hostile = false;
-                proj.damage = (int)((proj.damage+20) * 6 * player.meleeDamage);
+                proj.damage = (int)((proj.damage+20) * 6 * Player.GetDamage(DamageClass.Melee));
                 if (counterPlus)
                 {
                     proj.damage = (int)(proj.damage * 1.2);
                 }
-                player.buffTime[player.FindBuffIndex(mod.BuffType("CounterCooldown"))] -= 30;//reduces counter cooldown by .5 sec for each projectile reflected
+                Player.buffTime[Player.FindBuffIndex(Mod.Find<ModBuff>("CounterCooldown").Type)] -= 30;//reduces counter cooldown by .5 sec for each projectile reflected
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 6;
+                Player.immune = true;
+                Player.immuneTime = 6;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceEpee3")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceEpee3").Type) >= 0)
             {
                 proj.velocity = -proj.velocity * 2f;
                 proj.friendly = true;
                 proj.hostile = false;
-                proj.damage = (int)((proj.damage+30) * 8 * player.meleeDamage);
+                proj.damage = (int)((proj.damage+30) * 8 * Player.GetDamage(DamageClass.Melee));
                 if (counterPlus)
                 {
                     proj.damage = (int)(proj.damage * 1.2);
                 }
-                player.buffTime[player.FindBuffIndex(mod.BuffType("CounterCooldown"))] -= 60;
+                Player.buffTime[Player.FindBuffIndex(Mod.Find<ModBuff>("CounterCooldown").Type)] -= 60;
                 for (int i = 0; i < 12; i++)
                 {
-                    int d = Dust.NewDust(player.position, 38, 38, 135, proj.velocity.X, proj.velocity.Y);
+                    int d = Dust.NewDust(Player.position, 38, 38, 135, proj.velocity.X, proj.velocity.Y);
                     Main.dust[d].velocity /= 2;
                     Main.dust[d].scale = 1.3f;
                 }
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 6;
+                Player.immune = true;
+                Player.immuneTime = 6;
             }
-            else if (player.FindBuffIndex(mod.BuffType("CounterStanceFoil")) >= 0 || player.FindBuffIndex(mod.BuffType("CounterStanceFoil2")) >= 0 || player.FindBuffIndex(mod.BuffType("CounterStanceFoil3")) >= 0 || player.FindBuffIndex(mod.BuffType("CounterStanceFoil4")) >= 0)
+            else if (Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil").Type) >= 0 || Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil2").Type) >= 0 || Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil3").Type) >= 0 || Player.FindBuffIndex(Mod.Find<ModBuff>("CounterStanceFoil4").Type) >= 0)
             {
                 damage = 0;
-                player.immune = true;
-                player.immuneTime = 60;
+                Player.immune = true;
+                Player.immuneTime = 60;
             }
         }
-        public override void OnHitByNPC(NPC npc, int damage, bool crit)
+        public override void OnHitByNPC(NPC npc, Player.HurtInfo hurtInfo)
         {
             if (shockTonic && shockCharge >= 100)
             {
-                int dam = 30 + player.statDefense;
-                int direction = (npc.Center.X - player.Center.X > 0) ? 1 : -1;
+                int dam = 30 + Player.statDefense;
+                int direction = (npc.Center.X - Player.Center.X > 0) ? 1 : -1;
                 npc.StrikeNPC(dam, 10, direction);
                 NetMessage.SendData(28, -1, -1, null, npc.whoAmI, dam, 10, direction, 1);
                 shockCharge = 0;
-                Main.PlaySound(2, player.position, 66);
+                SoundEngine.PlaySound(SoundID.Item66, Player.position);
             }
         }
-        public override void OnHitNPC(Item item, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithItem(Item item, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Item, consider using OnHitNPC instead */
         {
             if (shockTonic && shockCharge >= 100)
             {
-                int dam = 30 + player.statDefense;
-                int direction = (target.Center.X - player.Center.X > 0) ? 1 : -1;
+                int dam = 30 + Player.statDefense;
+                int direction = (target.Center.X - Player.Center.X > 0) ? 1 : -1;
                 target.StrikeNPC(dam, 10, direction);
                 NetMessage.SendData(28, -1, -1, null, target.whoAmI, dam, 10, direction, 1);
                 shockCharge = 0;
-                Main.PlaySound(2, player.position, 66);
+                SoundEngine.PlaySound(SoundID.Item66, Player.position);
             }
-            int index = player.FindBuffIndex(mod.BuffType("VoidBurn"));
+            int index = Player.FindBuffIndex(Mod.Find<ModBuff>("VoidBurn").Type);
             if (index != -1)
             {
-                player.buffTime[index] -= (5 + damage);
+                Player.buffTime[index] -= (5 + damage);
             }
         }
-        public override void OnHitNPCWithProj(Projectile proj, NPC target, int damage, float knockback, bool crit)
+        public override void OnHitNPCWithProj(Projectile proj, NPC target, NPC.HitInfo hit, int damageDone)/* tModPorter If you don't need the Projectile, consider using OnHitNPC instead */
         {
-            int index = player.FindBuffIndex(mod.BuffType("VoidBurn"));
+            int index = Player.FindBuffIndex(Mod.Find<ModBuff>("VoidBurn").Type);
             if(index != -1)
             {
-                player.buffTime[index] -= (5 + damage);
+                Player.buffTime[index] -= (5 + damage);
             }
         }
         public override void PostUpdateRunSpeeds()
         {
             if (flightElixir)
             {
-                player.accRunSpeed *= 1.3f;
-                player.wingTimeMax = (int)(player.wingTimeMax * 1.3);
+                Player.accRunSpeed *= 1.3f;
+                Player.wingTimeMax = (int)(Player.wingTimeMax * 1.3);
             }
-            if (earthenDraught && player.velocity.Y == 0)
+            if (earthenDraught && Player.velocity.Y == 0)
             {
-                player.endurance += .15f;
+                Player.endurance += .15f;
             }
         }
         public override void PostUpdate()
         {
-            if (shockTonic && player.velocity.Y == 0)
+            if (shockTonic && Player.velocity.Y == 0)
             {
-                shockCharge += Math.Abs(player.velocity.X) / 9f;
+                shockCharge += Math.Abs(Player.velocity.X) / 9f;
             }
             if (shockCharge >= 100)
             {
                 shockCharge = 100;
                 if (Main.rand.Next(0, 12) == 0)
                 {
-                    int d = Dust.NewDust(player.position, player.width, player.height, DustID.Electric);
+                    int d = Dust.NewDust(Player.position, Player.width, Player.height, DustID.Electric);
                 }
             }
         }
@@ -581,31 +582,31 @@ namespace EnemyMods
             if (reconstructionTime>0 && reconstructionTime%20==0)
             {
                 int regen = (int)Math.Max(reconstructionHeal, 1);
-                player.lifeRegen += regen;
+                Player.lifeRegen += regen;
                 if(regen > Main.rand.Next(5, 20))
                 {
                     for(int i=0; i < regen/2+1; i++)
                     {
-                        int d = Dust.NewDust(player.position - new Vector2(player.width, player.height), player.width * 2, player.height * 2, DustID.SomethingRed);
-                        Main.dust[d].velocity = (player.Center - Main.dust[d].position) * .01f;
+                        int d = Dust.NewDust(Player.position - new Vector2(Player.width, Player.height), Player.width * 2, Player.height * 2, DustID.SomethingRed);
+                        Main.dust[d].velocity = (Player.Center - Main.dust[d].position) * .01f;
                     }
                 }
             }
         }
         public override void UpdateBadLifeRegen()
         {
-            if (player.FindBuffIndex(mod.BuffType("VoidBurn")) == -1)
+            if (Player.FindBuffIndex(Mod.Find<ModBuff>("VoidBurn").Type) == -1)
             {
                 voidBurn = 0;
             }
             else
             {
-                player.lifeRegenTime = 0;
-                if(player.lifeRegen > 0)
+                Player.lifeRegenTime = 0;
+                if(Player.lifeRegen > 0)
                 {
-                    player.lifeRegen = 0;
+                    Player.lifeRegen = 0;
                 }
-                player.lifeRegen -= voidBurn;
+                Player.lifeRegen -= voidBurn;
             }
         }
         public override void OnHitAnything(float x, float y, Entity victim)

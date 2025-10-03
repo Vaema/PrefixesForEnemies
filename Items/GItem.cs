@@ -8,7 +8,7 @@ namespace EnemyMods.Items
     {
         public int numNeedles = 0;
         public int timeToNeedle = 0;
-        public override bool CloneNewInstances => true;
+        protected override bool CloneNewInstances => true;
         public override bool InstancePerEntity => true;
     }
 }
